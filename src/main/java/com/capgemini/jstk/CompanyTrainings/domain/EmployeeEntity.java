@@ -11,15 +11,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "Employees")
 @Getter
 @Setter
-public class EmployeeEntity {
+public class EmployeeEntity extends AbstractEntity{
 
-    @Version
-    private Long version;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
     @Column(nullable = false, length = 30)
     private String firstName;
     @Column(nullable = false, length = 30)
@@ -35,9 +31,17 @@ public class EmployeeEntity {
     private EmployeeEntity superior;
 
     @ManyToMany
+    @JoinTable(name = "TrainingCoach", joinColumns = {
+            @JoinColumn(name = "EMPLOYEE_ID", nullable = false, updatable = false)}, inverseJoinColumns = {
+            @JoinColumn(name = "TRAINING_ID", nullable = false, updatable = false)})
     Set<TrainingEntity> trainingsAsCoach = new HashSet<>();
     @ManyToMany
+    @JoinTable(name = "TrainingStudent", joinColumns = {
+            @JoinColumn(name = "EMPLOYEE_ID", nullable = false, updatable = false)}, inverseJoinColumns = {
+            @JoinColumn(name = "TRAINING_id", nullable = false, updatable = false)})
     Set<TrainingEntity> trainingsAsStudent = new HashSet<>();
 
+    public EmployeeEntity() {
+    }
 
 }

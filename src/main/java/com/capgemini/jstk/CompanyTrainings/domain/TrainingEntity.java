@@ -12,12 +12,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "Trainings")
 @Getter
 @Setter
-public class TrainingEntity {
+public class TrainingEntity extends AbstractEntity {
 
-    @Version
-    private Long version;
     @Column(nullable = false)
     private String trainingName;
     @Enumerated
@@ -44,6 +43,7 @@ public class TrainingEntity {
     @ManyToMany(mappedBy = "trainingsAsExternalCoach")
     Set<ExternalCoachEntity> externalCoaches = new HashSet<>();
 
-
+    public TrainingEntity() {
+    }
 
 }
