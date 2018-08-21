@@ -5,10 +5,17 @@ import com.capgemini.jstk.CompanyTrainings.enums.Grade;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
 
 public class EmployeeTOBuilder {
+
+    private Long id;
     private String firstName;
     private String lastName;
     private EmployeePosition employeePosition;
     private Grade grade;
+
+    public EmployeeTOBuilder setId(Long id) {
+        this.id = id;
+        return this;
+    }
 
     public EmployeeTOBuilder setFirstName(String firstName) {
         this.firstName = firstName;
@@ -31,6 +38,6 @@ public class EmployeeTOBuilder {
     }
 
     public EmployeeTO buildEmployeeTO() {
-        return new EmployeeTO(firstName, lastName, employeePosition, grade);
+        return new EmployeeTO(id, firstName, lastName, employeePosition, grade);
     }
 }
