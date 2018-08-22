@@ -21,9 +21,10 @@ public class EmployeeMapper {
                 .buildEmployeeTO();
     }
 
-    public EmployeeEntity mapEmmployeeTO2EmployeeEntity(EmployeeTO employeeTO){
+    public EmployeeEntity mapEmployeeTO2EmployeeEntity(EmployeeTO employeeTO){
 
         return new EmployeeEntityBuilder()
+                .setVersion(employeeTO.getVersion())
                 .setFirstName(employeeTO.getFirstName())
                 .setLastName(employeeTO.getLastName())
                 .setEmployeePosition(employeeTO.getEmployeePosition())

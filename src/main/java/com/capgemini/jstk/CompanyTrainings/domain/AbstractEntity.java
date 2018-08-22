@@ -12,11 +12,11 @@ import java.util.Date;
 @Getter
 @Setter
 public class AbstractEntity implements Serializable{
+
     @Column(name = "create_date")
     private Date createDate;
     @Column(name = "update_date")
     private Date updateDate;
-
     @Version
     private Long version;
     @Id
