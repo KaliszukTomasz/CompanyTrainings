@@ -12,9 +12,9 @@ import java.util.Set;
 @Table(name = "External_coaches")
 @Getter
 @Setter
-public class ExternalCoachEntity extends AbstractEntity{
+public class ExternalCoachEntity extends AbstractEntity {
 
-   @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 30)
     private String firstName;
     @Column(nullable = false, length = 30)
     private String lastName;
@@ -22,13 +22,19 @@ public class ExternalCoachEntity extends AbstractEntity{
     private String company;
     @ManyToMany
     @JoinTable(name = "TraininigExternalCoach", joinColumns = {
-            @JoinColumn(name = "EXTERNALCOACH_ID", nullable = false, updatable = false) }, inverseJoinColumns = {
-            @JoinColumn(name = "TRAINING_ID", nullable = false, updatable = false) })
+            @JoinColumn(name = "EXTERNALCOACH_ID", nullable = false, updatable = false)}, inverseJoinColumns = {
+            @JoinColumn(name = "TRAINING_ID", nullable = false, updatable = false)})
     private Set<TrainingEntity> trainingsAsExternalCoach = new HashSet<>();
 
-    public ExternalCoachEntity(){
+    public ExternalCoachEntity() {
 
     }
 
-
+    public ExternalCoachEntity(Long version, Long id, String firstName, String lastName, String company, Set<TrainingEntity> trainingsAsExternalCoach) {
+        super(version, id);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.company = company;
+        this.trainingsAsExternalCoach = trainingsAsExternalCoach;
+    }
 }

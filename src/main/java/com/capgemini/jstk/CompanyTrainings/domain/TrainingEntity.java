@@ -46,4 +46,18 @@ public class TrainingEntity extends AbstractEntity {
     public TrainingEntity() {
     }
 
+    public TrainingEntity(Long version, Long id, String trainingName, TrainingType trainingType, Double duration, TrainingCharacter trainingCharacter, Date startDate, Date endDate, Integer costPerStudent, String tags, Set<EmployeeEntity> employeesAsCoaches, Set<EmployeeEntity> employeesAsStudents, Set<ExternalCoachEntity> externalCoaches) {
+        super(version, id);
+        this.trainingName = trainingName;
+        this.trainingType = trainingType;
+        this.duration = duration;
+        this.trainingCharacter = trainingCharacter;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.costPerStudent = costPerStudent;
+        this.tags = tags;
+        this.employeesAsCoaches = employeesAsCoaches;
+        this.employeesAsStudents = employeesAsStudents;
+        this.externalCoaches = externalCoaches;
+    }
 }

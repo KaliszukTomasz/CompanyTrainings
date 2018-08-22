@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ import java.util.Set;
 @Table(name = "Employees")
 @Getter
 @Setter
-public class EmployeeEntity extends AbstractEntity{
+public class EmployeeEntity extends AbstractEntity {
 
     @Column(nullable = false, length = 30)
     private String firstName;
@@ -42,6 +43,17 @@ public class EmployeeEntity extends AbstractEntity{
     Set<TrainingEntity> trainingsAsStudent = new HashSet<>();
 
     public EmployeeEntity() {
+    }
+
+
+
+    public EmployeeEntity(Long version, Long id, String firstName, String lastName, EmployeePosition employeePosition, Grade grade, EmployeeEntity superior) {
+        super(version, id);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.employeePosition = employeePosition;
+        this.grade = grade;
+        this.superior = superior;
     }
 
 }
