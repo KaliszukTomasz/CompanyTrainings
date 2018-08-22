@@ -5,7 +5,10 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
+
+import static java.time.Instant.now;
 
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -22,6 +25,17 @@ public class AbstractEntity implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+
+    @PrePersist
+    public void generateActualCreateDate(){
+        setCreateDate(Date.from(now()));
+    }
+    @PreUpdate
+    public void generateActualUpdateDate(){
+        setUpdateDate(Date.from(now()));
+    }
+
 
     public AbstractEntity() {
     }
