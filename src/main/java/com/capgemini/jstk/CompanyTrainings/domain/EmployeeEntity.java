@@ -45,6 +45,26 @@ public class EmployeeEntity extends AbstractEntity {
     public EmployeeEntity() {
     }
 
+    public void addTrainingToTrainingsAsCoach(TrainingEntity trainingEntity){
+        trainingsAsCoach.add(trainingEntity);
+        trainingEntity.getEmployeesAsCoaches().add(this);//TODO czy to musi być w innej metodzie?!
+    }
+
+    public TrainingEntity removeTrainingFromTrainingsAsCoach(TrainingEntity trainingEntity){
+        trainingsAsCoach.remove(trainingEntity);
+        trainingEntity.getEmployeesAsCoaches().remove(this);
+        return trainingEntity;
+    }
+
+    public void addTrainingToTrainingsAsStudent(TrainingEntity trainingEntity){
+        trainingsAsStudent.add(trainingEntity);
+        trainingEntity.getEmployeesAsStudents().add(this);
+    }
+    public TrainingEntity removeTrainingFromTrainingsAsStudent(TrainingEntity trainingEntity){
+        trainingsAsStudent.remove(trainingEntity);
+        trainingEntity.getEmployeesAsStudents().remove(this);
+        return trainingEntity;
+    }
 
 
     public EmployeeEntity(Long version, Long id, String firstName, String lastName, EmployeePosition employeePosition, Grade grade, EmployeeEntity superior) {

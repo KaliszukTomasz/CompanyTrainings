@@ -37,4 +37,16 @@ public class ExternalCoachEntity extends AbstractEntity {
         this.company = company;
         this.trainingsAsExternalCoach = trainingsAsExternalCoach;
     }
+
+
+    public void addTrainingToTrainingsAsExternalCoach(TrainingEntity trainingEntity) {
+        trainingsAsExternalCoach.add(trainingEntity);
+        trainingEntity.getExternalCoaches().add(this);
+    }
+
+    public TrainingEntity removeTrainingFromTrainingsAsExternalCoach(TrainingEntity trainingEntity) {
+        trainingsAsExternalCoach.remove(trainingEntity);
+        trainingEntity.getExternalCoaches().remove(this);
+        return trainingEntity;
+    }
 }

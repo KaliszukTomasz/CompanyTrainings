@@ -60,4 +60,38 @@ public class TrainingEntity extends AbstractEntity {
         this.employeesAsStudents = employeesAsStudents;
         this.externalCoaches = externalCoaches;
     }
+
+    public void addEmployeeToEmployeesAsCoaches(EmployeeEntity employeeEntity) {
+        employeesAsCoaches.add(employeeEntity);
+        employeeEntity.getTrainingsAsCoach().add(this);
+    }
+
+    public EmployeeEntity removeEmployeeFromEmployeesAsCoaches(EmployeeEntity employeeEntity) {
+        employeesAsCoaches.remove(employeeEntity);
+        employeeEntity.getTrainingsAsCoach().remove(this);
+        return employeeEntity;
+    }
+
+    public void addEmployeeToEmployeesAsStudent(EmployeeEntity employeeEntity) {
+        employeesAsStudents.add(employeeEntity);
+        employeeEntity.getTrainingsAsStudent().add(this);
+    }
+
+    public EmployeeEntity removeEmployeeFromEmployeesAsStudent(EmployeeEntity employeeEntity) {
+        employeesAsStudents.remove(employeeEntity);
+        employeeEntity.getTrainingsAsStudent().remove(this);
+        return employeeEntity;
+    }
+
+    public void addExternalCoachToExternalCoaches(ExternalCoachEntity externalCoachEntity) {
+        externalCoaches.add(externalCoachEntity);
+        externalCoachEntity.getTrainingsAsExternalCoach().add(this);
+    }
+
+    public ExternalCoachEntity removeExternalCoachFromExternalCoaches(ExternalCoachEntity externalCoachEntity) {
+        externalCoaches.remove(externalCoachEntity);
+        externalCoachEntity.getTrainingsAsExternalCoach().remove(this);
+        return externalCoachEntity;
+    }
+
 }
