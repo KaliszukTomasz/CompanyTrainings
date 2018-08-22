@@ -6,12 +6,17 @@ import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
 
 public class EmployeeTOBuilder {
 
+    private Long version;
     private Long id;
     private String firstName;
     private String lastName;
     private EmployeePosition employeePosition;
     private Grade grade;
 
+    public EmployeeTOBuilder setVersion(Long version) {
+        this.version = version;
+        return this;
+    }
     public EmployeeTOBuilder setId(Long id) {
         this.id = id;
         return this;
@@ -38,6 +43,6 @@ public class EmployeeTOBuilder {
     }
 
     public EmployeeTO buildEmployeeTO() {
-        return new EmployeeTO(id, firstName, lastName, employeePosition, grade);
+        return new EmployeeTO(version, id, firstName, lastName, employeePosition, grade);
     }
 }

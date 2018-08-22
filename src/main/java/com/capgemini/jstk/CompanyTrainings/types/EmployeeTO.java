@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class EmployeeTO {
 
-private Long varsion;
+private Long version;
 private Long id;
 private String firstName;
 private String lastName;
@@ -21,7 +21,9 @@ private Grade grade;
     public EmployeeTO() {
     }
 
-    public EmployeeTO(Long id, String firstName, String lastName, EmployeePosition employeePosition, Grade grade) {
+    public EmployeeTO(Long version, Long id, String firstName, String lastName, EmployeePosition employeePosition, Grade grade) {
+        this.version = version;
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.employeePosition = employeePosition;

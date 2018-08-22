@@ -6,6 +6,9 @@ import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
 import com.capgemini.jstk.CompanyTrainings.types.builders.EmployeeTOBuilder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class EmployeeMapper {
 
@@ -31,6 +34,20 @@ public class EmployeeMapper {
                 .setGrade(employeeTO.getGrade())
                 .buildEmployeeEntity();
 
+    }
+
+    public List<EmployeeTO> mapEmployeeEntityList2EmployeeTOList(List<EmployeeEntity> listEntitys) {
+
+        return listEntitys.stream().map(employeeEntity -> {
+            return new EmployeeTOBuilder()
+                    .setVersion(employeeEntity.getVersion())
+                    .setId(employeeEntity.getId())
+                    .setFirstName(employeeEntity.getFirstName())
+                    .setLastName(employeeEntity.getLastName())
+                    .setEmployeePosition(employeeEntity.getEmployeePosition())
+                    .setGrade(employeeEntity.getGrade())
+                    .buildEmployeeTO();
+        }).collect(Collectors.toList());
     }
 
 }

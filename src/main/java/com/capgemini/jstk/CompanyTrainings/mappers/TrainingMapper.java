@@ -6,10 +6,13 @@ import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 import com.capgemini.jstk.CompanyTrainings.types.builders.TrainingTOBuilder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class TrainingMapper {
 
-    public TrainingTO mapTrainingEntity2TrainingTO(TrainingEntity trainingEntity){
+    public TrainingTO mapTrainingEntity2TrainingTO(TrainingEntity trainingEntity) {
         return new TrainingTOBuilder()
                 .setVersion(trainingEntity.getVersion())
                 .setId(trainingEntity.getId())
@@ -25,9 +28,9 @@ public class TrainingMapper {
                 .buildTrainingTO();
     }
 
-    public TrainingEntity mapTrainingTO2TrainingEntity(TrainingTO trainingTO){
+    public TrainingEntity mapTrainingTO2TrainingEntity(TrainingTO trainingTO) {
 
-        return  new TrainingEntityBuilder()
+        return new TrainingEntityBuilder()
                 .setCostPerStudent(trainingTO.getCostPerStudent())
                 .setDuration(trainingTO.getDuration())
                 .setStartDate(trainingTO.getStartDate())
@@ -38,5 +41,24 @@ public class TrainingMapper {
                 .setTrainingType(trainingTO.getTrainingType())
                 .buildTrainingEntity();
 
+    }
+
+    public List<TrainingTO> mapTrainingEntityList2TrainingTOList(List<TrainingEntity> listEntitys) {
+
+        return listEntitys.stream().map(trainingEntity -> {
+            return new TrainingTOBuilder()
+                    .setVersion(trainingEntity.getVersion())
+                    .setId(trainingEntity.getId())
+                    .setCostPerStudent(trainingEntity.getCostPerStudent())
+                    .setDuration(trainingEntity.getDuration())
+                    .setStartDate(trainingEntity.getStartDate())
+                    .setEndDate(trainingEntity.getEndDate())
+                    .setTags(trainingEntity.getTags())
+                    .setTrainingCharacter(trainingEntity.getTrainingCharacter())
+                    .setTrainingName(trainingEntity.getTrainingName())
+                    .setTrainingType(trainingEntity.getTrainingType())
+                    .setVersion(trainingEntity.getVersion())
+                    .buildTrainingTO();
+        }).collect(Collectors.toList());
     }
 }
