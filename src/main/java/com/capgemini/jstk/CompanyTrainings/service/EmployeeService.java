@@ -74,13 +74,16 @@ public class EmployeeService {
 
     public EmployeeTO findOne(Long employeeId) {
 
-
         EmployeeEntity employeeEntity = employeeDao.findOne(employeeId);
         if (employeeEntity == null) {
             return null;
         }
         return employeeMapper.mapEmployeeEntity2EmployeeTO(employeeEntity);
 
+    }
+
+    public EmployeeEntity findOneEntity(Long employeeId){
+        return employeeDao.findOne(employeeId);
     }
 
 

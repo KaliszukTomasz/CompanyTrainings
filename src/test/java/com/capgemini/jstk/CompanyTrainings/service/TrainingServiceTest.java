@@ -1,19 +1,29 @@
 package com.capgemini.jstk.CompanyTrainings.service;
 
+import com.capgemini.jstk.CompanyTrainings.dao.TrainingDao;
+import com.capgemini.jstk.CompanyTrainings.domain.EmployeeEntity;
+import com.capgemini.jstk.CompanyTrainings.domain.TrainingEntity;
+import com.capgemini.jstk.CompanyTrainings.enums.EmployeePosition;
+import com.capgemini.jstk.CompanyTrainings.enums.Grade;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
-import com.capgemini.jstk.CompanyTrainings.exceptions.NoSuchTrainingIdInDatabaseException;
+import com.capgemini.jstk.CompanyTrainings.exceptions.*;
+import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
+import com.capgemini.jstk.CompanyTrainings.types.builders.EmployeeTOBuilder;
 import com.capgemini.jstk.CompanyTrainings.types.builders.TrainingTOBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -24,6 +34,11 @@ public class TrainingServiceTest {
 
     @Autowired
     TrainingService trainingService;
+    @Autowired
+    EmployeeService employeeService;
+    @Autowired
+    TrainingDao trainingDao;
+
     @Test
     public void shouldAddNewTrainingToDatabase() {
         // given
@@ -72,6 +87,151 @@ public class TrainingServiceTest {
         }
     }
 
+    @Test
+    public void shouldAddEmployeeToTrainingCoachesTest() {
+        // given
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        assertThat(trainingService.findSizeOfCoaches(trainingTO.getId()), is(0));
+        // when
+        trainingService.addCoachToTraining(trainingTO, employeeTO);
+        // then
+        assertThat(trainingService.findSizeOfCoaches(trainingTO.getId()), is(1));
+    }
+
+    @Test
+    public void shouldNOTAddEmployeeToTrainingCoachesWhenIsStudentAlreadyTest() {
+        // given
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        trainingService.addStudentToTraining(trainingTO, employeeTO);
+        // when
+        try {
+            trainingService.addCoachToTraining(trainingTO, employeeTO);
+            // then
+            Assert.fail("Expected that employee is student and coach");
+        } catch (EmployeeIsAlreadyStudentDuringThisTrainingException e) {
+            assertThat(trainingService.findSizeOfCoaches(trainingTO.getId()), is(0));
+        }
+
+    }
+
+    @Test
+    public void shouldNOTAddEmployeeToTrainingStudentsWhenIsCoachAlreadyTest() {
+        // given
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        trainingService.addCoachToTraining(trainingTO, employeeTO);
+        // when
+        try {
+            trainingService.addStudentToTraining(trainingTO, employeeTO);
+            // then
+            Assert.fail("Expected that employee is student and coach");
+        } catch (EmployeeIsAlreadyCoachDuringThisTrainingException e) {
+            assertThat(trainingService.findSizeOfStudents(trainingTO.getId()), is(0));
+        }
+
+    }
+
+    @Test
+    public void shouldAddEmployeeToTrainingStudentsTest() {
+        // given
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        assertThat(trainingService.findSizeOfCoaches(trainingTO.getId()), is(0));
+        // when
+        trainingService.addStudentToTraining(trainingTO, employeeTO);
+        // then
+        assertThat(trainingService.findSizeOfStudents(trainingTO.getId()), is(1));
+    }
+
+    @Test
+    public void shouldNOTAddEmployeeToFourthTrainingTest() {
+        // given
+        TrainingTO trainingTO1 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        TrainingTO trainingTO2 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        TrainingTO trainingTO3 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        TrainingTO trainingTO4 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        trainingService.addStudentToTraining(trainingTO1, employeeTO);
+        trainingService.addStudentToTraining(trainingTO2, employeeTO);
+        trainingService.addStudentToTraining(trainingTO3, employeeTO);
+        // when
+        try {
+            trainingService.addStudentToTraining(trainingTO4, employeeTO);
+            // then
+            Assert.fail("Expected that employee was added to fourth training in this year");
+        } catch (TooManyTrainingsInThisYearException e) {
+            // test pass
+        }
+
+    }
+
+    @Test
+    public void shouldAddEmployeeToFourthTrainingWhenGradeOverThirdGradeTest() {
+        // given
+        TrainingTO trainingTO1 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        TrainingTO trainingTO2 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        TrainingTO trainingTO3 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        TrainingTO trainingTO4 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+
+        EmployeeTO employeeTO = buildEmployeeTO();
+        employeeTO.setGrade(Grade.FOURTH);
+        employeeTO = employeeService.addEmployeeToDatabase(employeeTO);
+        trainingService.addStudentToTraining(trainingTO1, employeeTO);
+        trainingService.addStudentToTraining(trainingTO2, employeeTO);
+        trainingService.addStudentToTraining(trainingTO3, employeeTO);
+
+        // when
+        try {
+            trainingService.addStudentToTraining(trainingTO4, employeeTO);
+            // then
+            // test pass
+        } catch (TooManyTrainingsInThisYearException e) {
+            Assert.fail("Expected that employee was added to fourth training in this year");
+        }
+    }
+
+    @Test
+    public void shouldNOTAddEmployeeToTrainingWhenGradeOverThirdGradeAndBudgetOver50KTest() {
+        // given
+        TrainingTO trainingTO1 = trainingService.addTrainingTOToDatabase(build20KCostTrainingTO());
+        TrainingTO trainingTO2 = trainingService.addTrainingTOToDatabase(build20KCostTrainingTO());
+        TrainingTO trainingTO3 = trainingService.addTrainingTOToDatabase(build20KCostTrainingTO());
+
+        EmployeeTO employeeTO = buildEmployeeTO();
+        employeeTO.setGrade(Grade.FOURTH);
+        employeeTO = employeeService.addEmployeeToDatabase(employeeTO);
+        trainingService.addStudentToTraining(trainingTO1, employeeTO);
+        trainingService.addStudentToTraining(trainingTO2, employeeTO);
+
+        // when
+        try {
+            trainingService.addStudentToTraining(trainingTO3, employeeTO);
+            Assert.fail("Expected that employee was added to fourth training in this year");
+        } catch (Budher50KLimitForEmployeeOverThirdGradeException e) {
+            // then
+            // test pass
+        }
+    }
+
+    @Test
+    public void shouldNOTAddEmployeeToTrainingWhenGradeUnderFourthGradeAndBudgetOver15KTest() {
+        // given
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(build20KCostTrainingTO());
+
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+
+        // when
+        try {
+            trainingService.addStudentToTraining(trainingTO, employeeTO);
+            Assert.fail("Expected that employee was added to fourth training in this year");
+        } catch (Budget15KLimitForEmployeeUnderFourthGradeException e) {
+            // then
+            // test pass
+        }
+    }
+
     private TrainingTO buildTrainingTO() {
         return new TrainingTOBuilder()
                 .setId(1L)
@@ -79,11 +239,36 @@ public class TrainingServiceTest {
                 .setTrainingName("StarterKit")
                 .setTrainingCharacter(TrainingCharacter.EXTERNAL)
                 .setTags("Java, Spring")
-                .setStartDate(new Date(2018, 12,1))
-                .setEndDate(new Date(2018,12,4))
+                .setStartDate(new Date(2018, 12, 1))
+                .setEndDate(new Date(2018, 12, 4))
                 .setDuration(4d)
                 .setCostPerStudent(2000)
                 .buildTrainingTO();
 
+    }
+
+    private TrainingTO build20KCostTrainingTO() {
+        return new TrainingTOBuilder()
+                .setId(1L)
+                .setTrainingType(TrainingType.MANAGEMENT)
+                .setTrainingName("StarterKit")
+                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
+                .setTags("Java, Spring")
+                .setStartDate(new Date(2018, 12, 1))
+                .setEndDate(new Date(2018, 12, 4))
+                .setDuration(4d)
+                .setCostPerStudent(20000)
+                .buildTrainingTO();
+
+    }
+
+    private EmployeeTO buildEmployeeTO() {
+        return new EmployeeTOBuilder()
+                .setId(1L)
+                .setGrade(Grade.FIRST)
+                .setEmployeePosition(EmployeePosition.DEALER)
+                .setFirstName("Jan")
+                .setLastName("Kowalski")
+                .buildEmployeeTO();
     }
 }
