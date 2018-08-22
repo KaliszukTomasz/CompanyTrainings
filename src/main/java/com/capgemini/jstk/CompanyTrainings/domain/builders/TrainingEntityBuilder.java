@@ -4,6 +4,7 @@ import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 public class TrainingEntityBuilder {
@@ -17,9 +18,9 @@ public class TrainingEntityBuilder {
     private Date endDate;
     private Integer costPerStudent;
     private String tags;
-    private Set<EmployeeEntity> employeesAsCoaches;
-    private Set<EmployeeEntity> employeesAsStudents;
-    private Set<ExternalCoachEntity> externalCoaches;
+    private Set<EmployeeEntity> employeesAsCoaches = new HashSet<>();
+    private Set<EmployeeEntity> employeesAsStudents = new HashSet<>();
+    private Set<ExternalCoachEntity> externalCoaches = new HashSet<>();
 
     public TrainingEntityBuilder setVersion(Long version) {
         this.version = version;
