@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TrainingDao extends CrudRepository<TrainingEntity, Long> {
+public interface TrainingDao extends CrudRepository<TrainingEntity, Long>, TrainingDaoCustom {
 
     List<TrainingEntity> findAll();
     TrainingEntity save(TrainingEntity trainingEntity);

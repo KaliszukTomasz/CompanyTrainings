@@ -8,6 +8,7 @@ import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -30,6 +31,10 @@ public class EmployeeService {
     public EmployeeTO updateEmployeeInDatabase(EmployeeTO employeeTO) {
 
         EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
+        if(employeeEntity.getVersion()!=employeeTO.getVersion()){
+            throw new OptimisticLockException();
+        }
+
         if (employeeEntity == null) {
             throw new NoSuchEmployeeIdInDatabaseException("No such employee.ID in database!");
         }

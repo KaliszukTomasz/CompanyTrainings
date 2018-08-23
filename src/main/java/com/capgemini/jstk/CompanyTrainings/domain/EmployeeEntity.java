@@ -47,7 +47,7 @@ public class EmployeeEntity extends AbstractEntity {
 
     public void addTrainingToTrainingsAsCoach(TrainingEntity trainingEntity){
         trainingsAsCoach.add(trainingEntity);
-        trainingEntity.getEmployeesAsCoaches().add(this);//TODO czy to musi być w innej metodzie?!
+        trainingEntity.getEmployeesAsCoaches().add(this);
     }
 
     public TrainingEntity removeTrainingFromTrainingsAsCoach(TrainingEntity trainingEntity){

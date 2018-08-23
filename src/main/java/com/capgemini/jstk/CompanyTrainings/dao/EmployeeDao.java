@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface EmployeeDao extends JpaRepository<EmployeeEntity, Long> {
+public interface EmployeeDao extends JpaRepository<EmployeeEntity, Long>, EmployeeDaoCustom {
 
     List<EmployeeEntity> findAll();
     EmployeeEntity save(EmployeeEntity employeeEntity);
