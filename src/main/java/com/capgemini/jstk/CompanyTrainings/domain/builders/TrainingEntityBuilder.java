@@ -1,9 +1,10 @@
 package com.capgemini.jstk.CompanyTrainings.domain;
 
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
+import com.capgemini.jstk.CompanyTrainings.enums.TrainingStatus;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,10 +15,11 @@ public class TrainingEntityBuilder {
     private TrainingType trainingType;
     private Double duration;
     private TrainingCharacter trainingCharacter;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Integer costPerStudent;
     private String tags;
+    private TrainingStatus trainingStatus = TrainingStatus.PLANNED;
     private Set<EmployeeEntity> employeesAsCoaches = new HashSet<>();
     private Set<EmployeeEntity> employeesAsStudents = new HashSet<>();
     private Set<ExternalCoachEntity> externalCoaches = new HashSet<>();
@@ -52,12 +54,12 @@ public class TrainingEntityBuilder {
         return this;
     }
 
-    public TrainingEntityBuilder setStartDate(Date startDate) {
+    public TrainingEntityBuilder setStartDate(LocalDate startDate) {
         this.startDate = startDate;
         return this;
     }
 
-    public TrainingEntityBuilder setEndDate(Date endDate) {
+    public TrainingEntityBuilder setEndDate(LocalDate endDate) {
         this.endDate = endDate;
         return this;
     }
@@ -69,6 +71,11 @@ public class TrainingEntityBuilder {
 
     public TrainingEntityBuilder setTags(String tags) {
         this.tags = tags;
+        return this;
+    }
+
+    public TrainingEntityBuilder setTrainingStatus(TrainingStatus trainingStatus) {
+        this.trainingStatus = trainingStatus;
         return this;
     }
 
@@ -88,6 +95,7 @@ public class TrainingEntityBuilder {
     }
 
     public TrainingEntity buildTrainingEntity() {
-        return new TrainingEntity(version, id, trainingName, trainingType, duration, trainingCharacter, startDate, endDate, costPerStudent, tags, employeesAsCoaches, employeesAsStudents, externalCoaches);
+        return new TrainingEntity(version, id, trainingName, trainingType, duration, trainingCharacter,
+                startDate, endDate, costPerStudent, tags, trainingStatus, employeesAsCoaches, employeesAsStudents, externalCoaches);
     }
 }

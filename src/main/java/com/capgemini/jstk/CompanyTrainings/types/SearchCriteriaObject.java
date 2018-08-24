@@ -4,8 +4,7 @@ import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-import java.util.Optional;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -13,7 +12,7 @@ public class SearchCriteriaObject {
 
     private String title;
     private TrainingType trainingType;
-    private Date trainingDate;
+    private LocalDate trainingDate;
     private Integer minCost;
     private Integer maxCost;
     private String tag;
@@ -21,7 +20,7 @@ public class SearchCriteriaObject {
     public SearchCriteriaObject() {
     }
 
-    public SearchCriteriaObject(String title, TrainingType trainingType, Date trainingDate, Integer minCost, Integer maxCost, String tag) {
+    public SearchCriteriaObject(String title, TrainingType trainingType, LocalDate trainingDate, Integer minCost, Integer maxCost, String tag) {
         this.title = title;
         this.trainingType = trainingType;
         this.trainingDate = trainingDate;

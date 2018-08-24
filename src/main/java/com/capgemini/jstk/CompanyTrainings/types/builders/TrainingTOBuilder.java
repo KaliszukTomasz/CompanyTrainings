@@ -1,10 +1,11 @@
 package com.capgemini.jstk.CompanyTrainings.types.builders;
 
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
+import com.capgemini.jstk.CompanyTrainings.enums.TrainingStatus;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class TrainingTOBuilder {
     private Long version;
@@ -13,10 +14,11 @@ public class TrainingTOBuilder {
     private TrainingType trainingType;
     private Double duration;
     private TrainingCharacter trainingCharacter;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Integer costPerStudent;
     private String tags;
+    private TrainingStatus trainingStatus = TrainingStatus.PLANNED;
 
     public TrainingTOBuilder setVersion(Long version) {
         this.version = version;
@@ -48,12 +50,12 @@ public class TrainingTOBuilder {
         return this;
     }
 
-    public TrainingTOBuilder setStartDate(Date startDate) {
+    public TrainingTOBuilder setStartDate(LocalDate startDate) {
         this.startDate = startDate;
         return this;
     }
 
-    public TrainingTOBuilder setEndDate(Date endDate) {
+    public TrainingTOBuilder setEndDate(LocalDate endDate) {
         this.endDate = endDate;
         return this;
     }
@@ -68,7 +70,12 @@ public class TrainingTOBuilder {
         return this;
     }
 
+    public TrainingTOBuilder setTrainingStatus(TrainingStatus trainingStatus){
+        this.trainingStatus = trainingStatus;
+        return this;
+    }
+
     public TrainingTO buildTrainingTO() {
-        return new TrainingTO(version, id, trainingName, trainingType, duration, trainingCharacter, startDate, endDate, costPerStudent, tags);
+        return new TrainingTO(version, id, trainingName, trainingType, duration, trainingCharacter, startDate, endDate, costPerStudent, tags, trainingStatus);
     }
 }

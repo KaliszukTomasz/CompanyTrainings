@@ -25,6 +25,7 @@ public class TrainingMapper {
                 .setTrainingName(trainingEntity.getTrainingName())
                 .setTrainingType(trainingEntity.getTrainingType())
                 .setVersion(trainingEntity.getVersion())
+                .setTrainingStatus(trainingEntity.getTrainingStatus())
                 .buildTrainingTO();
     }
 
@@ -39,6 +40,7 @@ public class TrainingMapper {
                 .setTrainingCharacter(trainingTO.getTrainingCharacter())
                 .setTrainingName(trainingTO.getTrainingName())
                 .setTrainingType(trainingTO.getTrainingType())
+                .setTrainingStatus(trainingTO.getTrainingStatus())
                 .buildTrainingEntity();
 
     }
@@ -58,6 +60,7 @@ public class TrainingMapper {
                     .setTrainingName(trainingEntity.getTrainingName())
                     .setTrainingType(trainingEntity.getTrainingType())
                     .setVersion(trainingEntity.getVersion())
+                    .setTrainingStatus(trainingEntity.getTrainingStatus())
                     .buildTrainingTO();
         }).collect(Collectors.toList());
     }

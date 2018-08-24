@@ -3,12 +3,12 @@ package com.capgemini.jstk.CompanyTrainings.types.builders;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
 import com.capgemini.jstk.CompanyTrainings.types.SearchCriteriaObject;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class SearchCriteriaObjectBuilder {
     private String title;
     private TrainingType trainingType;
-    private Date trainingDate;
+    private LocalDate trainingDate;
     private Integer minCost;
     private Integer maxCost;
     private String tag;
@@ -23,7 +23,7 @@ public class SearchCriteriaObjectBuilder {
         return this;
     }
 
-    public SearchCriteriaObjectBuilder setTrainingDate(Date trainingDate) {
+    public SearchCriteriaObjectBuilder setTrainingDate(LocalDate trainingDate) {
         this.trainingDate = trainingDate;
         return this;
     }

@@ -2,12 +2,13 @@ package com.capgemini.jstk.CompanyTrainings.domain;
 
 
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
+import com.capgemini.jstk.CompanyTrainings.enums.TrainingStatus;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,13 +29,15 @@ public class TrainingEntity extends AbstractEntity {
     @Column(nullable = false)
     private TrainingCharacter trainingCharacter;
     @Column(nullable = false)
-    private Date startDate;
+    private LocalDate startDate;
     @Column(nullable = false)
-    private Date endDate;
+    private LocalDate endDate;
     @Column(nullable = false)
     private Integer costPerStudent;
     @Column(nullable = false)
     private String tags;
+    @Column(nullable = false)
+    private TrainingStatus trainingStatus = TrainingStatus.PLANNED;
 
     @ManyToMany(mappedBy = "trainingsAsCoach")
     Set<EmployeeEntity> employeesAsCoaches = new HashSet<>();
@@ -46,7 +49,11 @@ public class TrainingEntity extends AbstractEntity {
     public TrainingEntity() {
     }
 
-    public TrainingEntity(Long version, Long id, String trainingName, TrainingType trainingType, Double duration, TrainingCharacter trainingCharacter, Date startDate, Date endDate, Integer costPerStudent, String tags, Set<EmployeeEntity> employeesAsCoaches, Set<EmployeeEntity> employeesAsStudents, Set<ExternalCoachEntity> externalCoaches) {
+    public TrainingEntity(Long version, Long id, String trainingName, TrainingType trainingType,
+                          Double duration, TrainingCharacter trainingCharacter, LocalDate startDate,
+                          LocalDate endDate, Integer costPerStudent, String tags, TrainingStatus trainingStatus, Set<EmployeeEntity>
+                                  employeesAsCoaches, Set<EmployeeEntity> employeesAsStudents,
+                          Set<ExternalCoachEntity> externalCoaches) {
         super(version, id);
         this.trainingName = trainingName;
         this.trainingType = trainingType;
@@ -59,6 +66,7 @@ public class TrainingEntity extends AbstractEntity {
         this.employeesAsCoaches = employeesAsCoaches;
         this.employeesAsStudents = employeesAsStudents;
         this.externalCoaches = externalCoaches;
+        this.trainingStatus = trainingStatus;
     }
 
     public void addEmployeeToEmployeesAsCoaches(EmployeeEntity employeeEntity) {

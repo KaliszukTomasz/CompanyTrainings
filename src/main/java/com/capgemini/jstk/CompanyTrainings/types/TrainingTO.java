@@ -1,13 +1,12 @@
 package com.capgemini.jstk.CompanyTrainings.types;
 
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
+import com.capgemini.jstk.CompanyTrainings.enums.TrainingStatus;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -19,15 +18,18 @@ public class TrainingTO {
     private TrainingType trainingType;
     private Double duration;
     private TrainingCharacter trainingCharacter;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Integer costPerStudent;
     private String tags;
+    private TrainingStatus trainingStatus;
 
     public TrainingTO() {
     }
 
-    public TrainingTO(Long version, Long id, String trainingName, TrainingType trainingType, Double duration, TrainingCharacter trainingCharacter, Date startDate, Date endDate, Integer costPerStudent, String tags) {
+    public TrainingTO(Long version, Long id, String trainingName, TrainingType trainingType,
+                      Double duration, TrainingCharacter trainingCharacter, LocalDate startDate,
+                      LocalDate endDate, Integer costPerStudent, String tags, TrainingStatus trainingStatus) {
         this.version = version;
         this.id = id;
         this.trainingName = trainingName;
@@ -38,5 +40,6 @@ public class TrainingTO {
         this.endDate = endDate;
         this.costPerStudent = costPerStudent;
         this.tags = tags;
+        this.trainingStatus = trainingStatus;
     }
 }
