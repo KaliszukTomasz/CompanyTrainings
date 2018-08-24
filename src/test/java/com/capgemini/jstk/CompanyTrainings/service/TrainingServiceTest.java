@@ -9,8 +9,10 @@ import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
 import com.capgemini.jstk.CompanyTrainings.exceptions.*;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
+import com.capgemini.jstk.CompanyTrainings.types.SearchCriteriaObject;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 import com.capgemini.jstk.CompanyTrainings.types.builders.EmployeeTOBuilder;
+import com.capgemini.jstk.CompanyTrainings.types.builders.SearchCriteriaObjectBuilder;
 import com.capgemini.jstk.CompanyTrainings.types.builders.TrainingTOBuilder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +22,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -232,6 +236,66 @@ public class TrainingServiceTest {
         }
     }
 
+    @Test
+    public void shouldFindTrainingsByCriteriaQueryWithTitleAndTypeTest() {
+        // given
+        SearchCriteriaObject searchCriteriaObject = new SearchCriteriaObjectBuilder()
+                .setMinCost(null)
+                .setMaxCost(null)
+                .setTag(null)
+                .setTitle("Java")
+                .setTrainingDate(null)
+                .setTrainingType(TrainingType.TECHNICAL)
+                .buildSearchCriteriaObject();
+        int startSize = trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size();
+        trainingService.addTrainingTOToDatabase(build20KCostTrainingTO());
+        trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        // when
+        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(0));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithTitleAndType("Java", TrainingType.TECHNICAL));
+        // then
+        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(1));
+    }
+
+    @Test
+    public void shouldFindTrainingsByCriteriaQueryWithMinAndMaxCostTest() {
+        // given
+        SearchCriteriaObject searchCriteriaObject = new SearchCriteriaObjectBuilder()
+                .setMinCost(1000)
+                .setMaxCost(3000)
+                .buildSearchCriteriaObject();
+        int startSize = trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size();
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithCost(5000));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithCost(5000));
+        // when
+        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(0));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithCost(2000));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithCost(3000));
+        // then
+        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(2));
+    }
+
+    @Test
+    public void shouldFindTrainingsByCriteriaQueryWithDateTest() {
+        // given
+        SearchCriteriaObject searchCriteriaObject = new SearchCriteriaObjectBuilder()
+                .setTrainingDate(new Date(2018, 05, 06, 18, 16))
+                .buildSearchCriteriaObject();
+        int startSize = trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size();
+
+        // when
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(new Date(2018,05,05), new Date(2018,05,10)));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(new Date(2018,05,07), new Date(2018,05,10)));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(new Date(2018,06,05), new Date(2018,06,10)));
+
+        // then
+        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(1));
+        searchCriteriaObject.setTrainingDate(new Date(2018, 05, 8, 18, 16));
+        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(2));
+        searchCriteriaObject.setTrainingDate(new Date(2018, 05, 16, 18, 16));
+        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(0));
+    }
+
     private TrainingTO buildTrainingTO() {
         return new TrainingTOBuilder()
                 .setId(1L)
@@ -242,7 +306,7 @@ public class TrainingServiceTest {
                 .setStartDate(new Date(2018, 12, 1))
                 .setEndDate(new Date(2018, 12, 4))
                 .setDuration(4d)
-                .setCostPerStudent(2000)
+                .setCostPerStudent(5000)
                 .buildTrainingTO();
 
     }
@@ -259,9 +323,51 @@ public class TrainingServiceTest {
                 .setDuration(4d)
                 .setCostPerStudent(20000)
                 .buildTrainingTO();
-
     }
 
+
+    private TrainingTO buildTrainingTOWithTitleAndType(String title, TrainingType trainingType) {
+        return new TrainingTOBuilder()
+                .setId(1L)
+                .setTrainingType(trainingType)
+                .setTrainingName(title)
+                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
+                .setTags("Java, Spring")
+                .setStartDate(new Date(2018, 12, 1))
+                .setEndDate(new Date(2018, 12, 4))
+                .setDuration(4d)
+                .setCostPerStudent(20000)
+                .buildTrainingTO();
+    }
+
+    private TrainingTO buildTrainingTOWithDate(Date startDate, Date endDate) {
+        return new TrainingTOBuilder()
+                .setId(1L)
+                .setTrainingType(TrainingType.TECHNICAL)
+                .setTrainingName("STARTER")
+                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
+                .setTags("Java, Spring")
+                .setStartDate(startDate)
+                .setEndDate(endDate)
+                .setDuration(4d)
+                .setCostPerStudent(20000)
+                .buildTrainingTO();
+    }
+
+    private TrainingTO buildTrainingTOWithCost(Integer cost) {
+        return new TrainingTOBuilder()
+                .setId(1L)
+                .setTrainingType(TrainingType.MANAGEMENT)
+                .setTrainingName("Spring")
+                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
+                .setTags("Java, Spring")
+                .setStartDate(new Date(2018, 12, 1))
+                .setEndDate(new Date(2018, 12, 4))
+                .setDuration(4d)
+                .setCostPerStudent(cost)
+                .buildTrainingTO();
+
+    }
     private EmployeeTO buildEmployeeTO() {
         return new EmployeeTOBuilder()
                 .setId(1L)
