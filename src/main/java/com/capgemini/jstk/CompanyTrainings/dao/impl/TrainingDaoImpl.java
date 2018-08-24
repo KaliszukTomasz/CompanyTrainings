@@ -1,16 +1,11 @@
 package com.capgemini.jstk.CompanyTrainings.dao.impl;
 
-import com.capgemini.jstk.CompanyTrainings.dao.TrainingDao;
 import com.capgemini.jstk.CompanyTrainings.dao.TrainingDaoCustom;
 import com.capgemini.jstk.CompanyTrainings.domain.QTrainingEntity;
 import com.capgemini.jstk.CompanyTrainings.domain.TrainingEntity;
-import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
 import com.capgemini.jstk.CompanyTrainings.types.SearchCriteriaObject;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.hibernate.HibernateQuery;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

@@ -2,9 +2,7 @@ package com.capgemini.jstk.CompanyTrainings.types;
 
 import com.capgemini.jstk.CompanyTrainings.enums.EmployeePosition;
 import com.capgemini.jstk.CompanyTrainings.enums.Grade;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
