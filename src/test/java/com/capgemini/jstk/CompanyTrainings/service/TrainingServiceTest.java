@@ -1,6 +1,7 @@
 package com.capgemini.jstk.CompanyTrainings.service;
 
 import com.capgemini.jstk.CompanyTrainings.dao.TrainingDao;
+import com.capgemini.jstk.CompanyTrainings.domain.AbstractEntity;
 import com.capgemini.jstk.CompanyTrainings.enums.EmployeePosition;
 import com.capgemini.jstk.CompanyTrainings.enums.Grade;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
@@ -27,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = "spring.profiles.active=hsql")
-public class TrainingServiceTest {
+public class TrainingServiceTest extends AbstractTest {
 
     @Autowired
     TrainingService trainingService;
@@ -289,85 +290,4 @@ public class TrainingServiceTest {
         assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(0));
     }
 
-    private TrainingTO buildTrainingTO() {
-        return new TrainingTOBuilder()
-                .setId(1L)
-                .setTrainingType(TrainingType.MANAGEMENT)
-                .setTrainingName("StarterKit")
-                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
-                .setTags("Java, Spring")
-                .setStartDate(LocalDate.of(2018, 12, 1))
-                .setEndDate(LocalDate.of(2018, 12, 4))
-                .setDuration(4d)
-                .setCostPerStudent(5000)
-                .buildTrainingTO();
-
-    }
-
-    private TrainingTO build20KCostTrainingTO() {
-        return new TrainingTOBuilder()
-                .setId(1L)
-                .setTrainingType(TrainingType.MANAGEMENT)
-                .setTrainingName("StarterKit")
-                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
-                .setTags("Java, Spring")
-                .setStartDate(LocalDate.of(2018, 12, 1))
-                .setEndDate(LocalDate.of(2018, 12, 4))
-                .setDuration(4d)
-                .setCostPerStudent(20000)
-                .buildTrainingTO();
-    }
-
-
-    private TrainingTO buildTrainingTOWithTitleAndType(String title, TrainingType trainingType) {
-        return new TrainingTOBuilder()
-                .setId(1L)
-                .setTrainingType(trainingType)
-                .setTrainingName(title)
-                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
-                .setTags("Java, Spring")
-                .setStartDate(LocalDate.of(2018, 12, 1))
-                .setEndDate(LocalDate.of(2018, 12, 4))
-                .setDuration(4d)
-                .setCostPerStudent(20000)
-                .buildTrainingTO();
-    }
-
-    private TrainingTO buildTrainingTOWithDate(LocalDate startDate, LocalDate endDate) {
-        return new TrainingTOBuilder()
-                .setId(1L)
-                .setTrainingType(TrainingType.TECHNICAL)
-                .setTrainingName("STARTER")
-                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
-                .setTags("Java, Spring")
-                .setStartDate(startDate)
-                .setEndDate(endDate)
-                .setDuration(4d)
-                .setCostPerStudent(20000)
-                .buildTrainingTO();
-    }
-
-    private TrainingTO buildTrainingTOWithCost(Integer cost) {
-        return new TrainingTOBuilder()
-                .setId(1L)
-                .setTrainingType(TrainingType.MANAGEMENT)
-                .setTrainingName("Spring")
-                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
-                .setTags("Java, Spring")
-                .setStartDate(LocalDate.of(2018, 12, 1))
-                .setEndDate(LocalDate.of(2018, 12, 4))
-                .setDuration(4d)
-                .setCostPerStudent(cost)
-                .buildTrainingTO();
-
-    }
-    private EmployeeTO buildEmployeeTO() {
-        return new EmployeeTOBuilder()
-                .setId(1L)
-                .setGrade(Grade.FIRST)
-                .setEmployeePosition(EmployeePosition.DEALER)
-                .setFirstName("Jan")
-                .setLastName("Kowalski")
-                .buildEmployeeTO();
-    }
 }

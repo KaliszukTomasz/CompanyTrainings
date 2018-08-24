@@ -179,4 +179,11 @@ public class TrainingService {
         return trainingMapper.mapTrainingEntityList2TrainingTOList(trainingEntityList);
     }
 
+    public List<TrainingTO> findTrainingsWithTheHighestEdition(){
+
+        List<TrainingEntity> trainingEntityList = trainingDao.findTrainingsWithTheHighestEdition();
+        return trainingMapper.mapTrainingEntityList2TrainingTOList(trainingEntityList);
+
+    }
+
 }

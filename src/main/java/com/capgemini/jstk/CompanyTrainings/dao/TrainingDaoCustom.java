@@ -8,4 +8,6 @@ import java.util.List;
 public interface TrainingDaoCustom {
 
     List<TrainingEntity> findTrainingsByCriteria(SearchCriteriaObject searchCriteriaObject);
+
+    List<TrainingEntity> findTrainingsWithTheHighestEdition();
 }

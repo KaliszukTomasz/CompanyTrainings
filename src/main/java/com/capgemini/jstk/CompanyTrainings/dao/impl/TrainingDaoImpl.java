@@ -47,4 +47,27 @@ public class TrainingDaoImpl implements TrainingDaoCustom {
 
         return query.from(trainingEntity).where(condition).fetch();
     }
+
+    @Override
+    public List<TrainingEntity> findTrainingsWithTheHighestEdition() {
+        JPAQuery<TrainingEntity> query = new JPAQuery(em);
+        JPAQuery<TrainingEntity> query2 = new JPAQuery(em);
+        QTrainingEntity trainingEntity = QTrainingEntity.trainingEntity;
+
+        List<Long> countList = query.select(trainingEntity.count())
+                .from(trainingEntity)
+                .groupBy(trainingEntity.trainingName).fetch();
+        Long countMax = countList.stream().max(Long::compare).get();
+
+        List<String> titleMaxCountList = query.select(trainingEntity.trainingName)
+                .from(trainingEntity)
+                .groupBy(trainingEntity.trainingName)
+                .having(trainingEntity.count().eq(countMax))
+                .fetch();
+
+        return query2.select(trainingEntity)
+                .from(trainingEntity)
+                .where(trainingEntity.trainingName.in(titleMaxCountList))
+                .fetch();
+    }
 }

@@ -2,6 +2,7 @@ package com.capgemini.jstk.CompanyTrainings.service;
 
 
 import com.capgemini.jstk.CompanyTrainings.dao.EmployeeDao;
+import com.capgemini.jstk.CompanyTrainings.domain.EmployeeEntity;
 import com.capgemini.jstk.CompanyTrainings.enums.EmployeePosition;
 import com.capgemini.jstk.CompanyTrainings.enums.Grade;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
@@ -26,11 +27,12 @@ import java.util.List;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = "spring.profiles.active=hsql")
-public class EmployeeServiceTest {
+public class EmployeeServiceTest extends AbstractTest{
 
     @Autowired
     EmployeeService employeeService;
@@ -65,19 +67,20 @@ public class EmployeeServiceTest {
     @Test
     public void shouldCheckTimePersistAndUpdate() {
         // given
+        int startSize = employeeDao.findAll().size();
         // when
         EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
         employeeTO.setGrade(Grade.FIFTH);
-//        EmployeeEntity employeeEntity1 = employeeDao.findOne(employeeTO.getId());
+        EmployeeEntity employeeEntity1 = employeeDao.findOne(employeeTO.getId());
         employeeService.updateEmployeeInDatabase(employeeTO);
-//        EmployeeEntity employeeEntity2 = employeeDao.findOne(employeeTO.getId());
-//        assertThat(employeeDao.findAll().size(), is(1));
+        EmployeeEntity employeeEntity2 = employeeDao.findOne(employeeTO.getId());
+        assertThat(employeeDao.findAll().size()-startSize, is(1));
         // then
-//        assertThat(employeeEntity1.getCreateDate(), is(notNullValue()));
-//        assertThat(employeeEntity1.getUpdateDate(), is(nullValue()));
-//        assertThat(employeeEntity2.getCreateDate(), is(notNullValue()));
-////        assertThat(employeeEntity2.getUpdateDate(), is(notNullValue()));
-//        assertEquals(employeeEntity1.getCreateDate(), employeeEntity2.getCreateDate());
+        assertThat(employeeEntity1.getCreateDate(), is(notNullValue()));
+        assertThat(employeeEntity1.getUpdateDate(), is(nullValue()));
+        assertThat(employeeEntity2.getCreateDate(), is(notNullValue()));
+        assertThat(employeeEntity2.getUpdateDate(), is(notNullValue()));
+        assertEquals(employeeEntity1.getCreateDate(), employeeEntity2.getCreateDate());
     }
 
     @Test
@@ -228,71 +231,5 @@ public class EmployeeServiceTest {
 
     }
 
-    private EmployeeTO buildEmployeeTO() {
-        return new EmployeeTOBuilder()
-                .setId(1L)
-                .setGrade(Grade.FIRST)
-                .setEmployeePosition(EmployeePosition.DEALER)
-                .setFirstName("Jan")
-                .setLastName("Kowalski")
-                .buildEmployeeTO();
-    }
 
-    private TrainingTO buildTrainingTO() {
-        return new TrainingTOBuilder()
-                .setId(1L)
-                .setTrainingType(TrainingType.MANAGEMENT)
-                .setTrainingName("StarterKit")
-                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
-                .setTags("Java, Spring")
-                .setStartDate(LocalDate.of(2018,12,4))
-                .setEndDate(LocalDate.of(2018, 12, 4))
-                .setDuration(4d)
-                .setCostPerStudent(2000)
-                .buildTrainingTO();
-
-    }
-
-    private TrainingTO buildTrainingTOInTime(LocalDate startTime, LocalDate endTime) {
-        return new TrainingTOBuilder()
-                .setId(1L)
-                .setTrainingType(TrainingType.MANAGEMENT)
-                .setTrainingName("StarterKit")
-                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
-                .setTags("Java, Spring")
-                .setStartDate(startTime)
-                .setEndDate(endTime)
-                .setDuration(4d)
-                .setCostPerStudent(2000)
-                .buildTrainingTO();
-
-    }
-    private TrainingTO buildTrainingTOWithDuration(Double duration) {
-        return new TrainingTOBuilder()
-                .setId(1L)
-                .setTrainingType(TrainingType.MANAGEMENT)
-                .setTrainingName("StarterKit")
-                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
-                .setTags("Java, Spring")
-                .setStartDate(LocalDate.of(2018, 12, 1))
-                .setEndDate(LocalDate.of(2018, 12, 4))
-                .setDuration(duration)
-                .setCostPerStudent(5000)
-                .buildTrainingTO();
-
-    }
-    private TrainingTO buildTrainingTOWithCost(Integer cost) {
-        return new TrainingTOBuilder()
-                .setId(1L)
-                .setTrainingType(TrainingType.MANAGEMENT)
-                .setTrainingName("Spring")
-                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
-                .setTags("Java, Spring")
-                .setStartDate(LocalDate.of(2018, 12, 1))
-                .setEndDate(LocalDate.of(2018, 12, 4))
-                .setDuration(4d)
-                .setCostPerStudent(cost)
-                .buildTrainingTO();
-
-    }
 }
