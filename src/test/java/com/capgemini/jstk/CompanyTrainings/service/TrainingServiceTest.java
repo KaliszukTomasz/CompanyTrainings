@@ -1,8 +1,6 @@
 package com.capgemini.jstk.CompanyTrainings.service;
 
 import com.capgemini.jstk.CompanyTrainings.dao.TrainingDao;
-import com.capgemini.jstk.CompanyTrainings.domain.EmployeeEntity;
-import com.capgemini.jstk.CompanyTrainings.domain.TrainingEntity;
 import com.capgemini.jstk.CompanyTrainings.enums.EmployeePosition;
 import com.capgemini.jstk.CompanyTrainings.enums.Grade;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
@@ -21,15 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.transaction.Transactional;
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -279,20 +272,20 @@ public class TrainingServiceTest {
     public void shouldFindTrainingsByCriteriaQueryWithDateTest() {
         // given
         SearchCriteriaObject searchCriteriaObject = new SearchCriteriaObjectBuilder()
-                .setTrainingDate(new Date(2018, 05, 06, 18, 16))
+                .setTrainingDate(LocalDate.of(2018,5,6))
                 .buildSearchCriteriaObject();
         int startSize = trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size();
 
         // when
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(new Date(2018,05,05), new Date(2018,05,10)));
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(new Date(2018,05,07), new Date(2018,05,10)));
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(new Date(2018,06,05), new Date(2018,06,10)));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018,05,05), LocalDate.of(2018,05,10)));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018,05,07), LocalDate.of(2018,05,10)));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018,06,05), LocalDate.of(2018,06,10)));
 
         // then
         assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(1));
-        searchCriteriaObject.setTrainingDate(new Date(2018, 05, 8, 18, 16));
+        searchCriteriaObject.setTrainingDate(LocalDate.of(2018,5,9));
         assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(2));
-        searchCriteriaObject.setTrainingDate(new Date(2018, 05, 16, 18, 16));
+        searchCriteriaObject.setTrainingDate(LocalDate.of(2018,5,20));
         assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(0));
     }
 
@@ -303,8 +296,8 @@ public class TrainingServiceTest {
                 .setTrainingName("StarterKit")
                 .setTrainingCharacter(TrainingCharacter.EXTERNAL)
                 .setTags("Java, Spring")
-                .setStartDate(new Date(2018, 12, 1))
-                .setEndDate(new Date(2018, 12, 4))
+                .setStartDate(LocalDate.of(2018, 12, 1))
+                .setEndDate(LocalDate.of(2018, 12, 4))
                 .setDuration(4d)
                 .setCostPerStudent(5000)
                 .buildTrainingTO();
@@ -318,8 +311,8 @@ public class TrainingServiceTest {
                 .setTrainingName("StarterKit")
                 .setTrainingCharacter(TrainingCharacter.EXTERNAL)
                 .setTags("Java, Spring")
-                .setStartDate(new Date(2018, 12, 1))
-                .setEndDate(new Date(2018, 12, 4))
+                .setStartDate(LocalDate.of(2018, 12, 1))
+                .setEndDate(LocalDate.of(2018, 12, 4))
                 .setDuration(4d)
                 .setCostPerStudent(20000)
                 .buildTrainingTO();
@@ -333,14 +326,14 @@ public class TrainingServiceTest {
                 .setTrainingName(title)
                 .setTrainingCharacter(TrainingCharacter.EXTERNAL)
                 .setTags("Java, Spring")
-                .setStartDate(new Date(2018, 12, 1))
-                .setEndDate(new Date(2018, 12, 4))
+                .setStartDate(LocalDate.of(2018, 12, 1))
+                .setEndDate(LocalDate.of(2018, 12, 4))
                 .setDuration(4d)
                 .setCostPerStudent(20000)
                 .buildTrainingTO();
     }
 
-    private TrainingTO buildTrainingTOWithDate(Date startDate, Date endDate) {
+    private TrainingTO buildTrainingTOWithDate(LocalDate startDate, LocalDate endDate) {
         return new TrainingTOBuilder()
                 .setId(1L)
                 .setTrainingType(TrainingType.TECHNICAL)
@@ -361,8 +354,8 @@ public class TrainingServiceTest {
                 .setTrainingName("Spring")
                 .setTrainingCharacter(TrainingCharacter.EXTERNAL)
                 .setTags("Java, Spring")
-                .setStartDate(new Date(2018, 12, 1))
-                .setEndDate(new Date(2018, 12, 4))
+                .setStartDate(LocalDate.of(2018, 12, 1))
+                .setEndDate(LocalDate.of(2018, 12, 4))
                 .setDuration(4d)
                 .setCostPerStudent(cost)
                 .buildTrainingTO();

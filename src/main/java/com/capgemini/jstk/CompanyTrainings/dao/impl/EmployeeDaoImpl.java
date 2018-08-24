@@ -5,12 +5,12 @@ import com.capgemini.jstk.CompanyTrainings.domain.EmployeeEntity;
 import com.capgemini.jstk.CompanyTrainings.domain.QEmployeeEntity;
 import com.capgemini.jstk.CompanyTrainings.domain.QTrainingEntity;
 import com.capgemini.jstk.CompanyTrainings.domain.TrainingEntity;
-import com.capgemini.jstk.CompanyTrainings.types.SearchCriteriaObject;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -20,15 +20,61 @@ public class EmployeeDaoImpl implements EmployeeDaoCustom {
 
 
     @Override
-    public Double findNumerOfHoursEmployeeAsCoach(EmployeeEntity tempEmployeeEntity) {
+    public Double findNumerOfHoursEmployeeAsCoach(EmployeeEntity tempEmployeeEntity, int year) {
         JPAQuery<TrainingEntity> query = new JPAQuery(em);
         QTrainingEntity trainingEntity = QTrainingEntity.trainingEntity;
         QEmployeeEntity employeeEntity = QEmployeeEntity.employeeEntity;
         return query.select(trainingEntity.duration.sum())
                 .from(trainingEntity)
                 .leftJoin(trainingEntity.employeesAsCoaches, employeeEntity)
-                .where(employeeEntity.eq(tempEmployeeEntity))
+                .where(employeeEntity.eq(tempEmployeeEntity).and(trainingEntity.startDate.year().eq(year)))
                 .fetchOne();
 
+    }
+
+    @Override
+    public List<TrainingEntity> findListOfTrainingsByOneEmployeeInPeriodOfTime(EmployeeEntity tempEmployeeEntity, LocalDate startDate, LocalDate endDate) {
+        JPAQuery<TrainingEntity> query = new JPAQuery<>(em);
+        QTrainingEntity trainingEntity = QTrainingEntity.trainingEntity;
+        QEmployeeEntity employeeEntity = QEmployeeEntity.employeeEntity;
+        return query.select(trainingEntity)
+                .from(trainingEntity)
+                .leftJoin(trainingEntity.employeesAsStudents, employeeEntity)
+                .where(employeeEntity.id.eq(tempEmployeeEntity.getId()).and(trainingEntity.endDate.between(startDate, endDate)))
+                .fetch();
+
+    }
+
+    @Override
+    public Integer findTotalCostOfTrainingsByEmployee(Long employeeId) {
+        JPAQuery<TrainingEntity> query = new JPAQuery<>(em);
+        QTrainingEntity trainingEntity = QTrainingEntity.trainingEntity;
+        QEmployeeEntity employeeEntity = QEmployeeEntity.employeeEntity;
+        return query.select(trainingEntity.costPerStudent.sum())
+                .from(trainingEntity)
+                .leftJoin(trainingEntity.employeesAsStudents, employeeEntity)
+                .where(employeeEntity.id.eq(employeeId))
+                .fetchOne();
+    }
+
+    @Override
+    public List<EmployeeEntity> findEmployeesWithLongestTimeOnTrainingsAsStudents() {
+        JPAQuery<TrainingEntity> query = new JPAQuery<>(em);
+        JPAQuery<TrainingEntity> query2 = new JPAQuery<>(em);
+        QTrainingEntity trainingEntity = QTrainingEntity.trainingEntity;
+        QEmployeeEntity employeeEntity = QEmployeeEntity.employeeEntity;
+        List<Double> sumDuration = query.select(trainingEntity.duration.sum())
+                .from(trainingEntity)
+                .leftJoin(trainingEntity.employeesAsStudents, employeeEntity)
+                .groupBy(employeeEntity)
+                .fetch();
+        Double maxDuration = sumDuration.stream().max(Double::compare).get();
+
+        return query2.select(employeeEntity)
+                .from(trainingEntity)
+                .leftJoin(trainingEntity.employeesAsStudents, employeeEntity)
+                .groupBy(employeeEntity)
+                .having(trainingEntity.duration.sum().eq(maxDuration))
+                .fetch();
     }
 }

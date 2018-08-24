@@ -2,7 +2,6 @@ package com.capgemini.jstk.CompanyTrainings.service;
 
 
 import com.capgemini.jstk.CompanyTrainings.dao.EmployeeDao;
-import com.capgemini.jstk.CompanyTrainings.domain.EmployeeEntity;
 import com.capgemini.jstk.CompanyTrainings.enums.EmployeePosition;
 import com.capgemini.jstk.CompanyTrainings.enums.Grade;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
@@ -12,25 +11,21 @@ import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 import com.capgemini.jstk.CompanyTrainings.types.builders.EmployeeTOBuilder;
 import com.capgemini.jstk.CompanyTrainings.types.builders.TrainingTOBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.internal.matchers.Matches;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 
 import javax.persistence.OptimisticLockException;
-import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.Iterator;
+import java.util.List;
 
-import java.util.Date;
-
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -146,13 +141,90 @@ public class EmployeeServiceTest {
         // given
         TrainingTO trainingTO1 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
         TrainingTO trainingTO2 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
-        TrainingTO trainingTO3 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
         EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
         // when
         trainingService.addCoachToTraining(trainingTO1, employeeTO);
         trainingService.addCoachToTraining(trainingTO2, employeeTO);
         // then
-        assertThat(employeeService.findNumerOfHoursEmployeeAsCoach(employeeTO), is(8d));
+        assertThat(employeeService.findNumerOfHoursEmployeeAsCoach(employeeTO, 2018), is(8d));
+
+    }
+
+    @Test
+    public void shouldFindNumberOfTrainingsByOneEmployeeInPeriodOfTime(){
+        // given
+        TrainingTO trainingTO1 = trainingService.addTrainingTOToDatabase(buildTrainingTOInTime
+                (LocalDate.of(2018,10,1), LocalDate.of(2018,10,5)));
+        TrainingTO trainingTO2 = trainingService.addTrainingTOToDatabase(buildTrainingTOInTime
+                (LocalDate.of(2018,10,3), LocalDate.of(2018,10,7)));
+        TrainingTO trainingTO3 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        trainingService.addStudentToTraining(trainingTO1, employeeTO);
+        trainingService.addStudentToTraining(trainingTO2, employeeTO);
+
+        // then
+        assertThat(employeeService.findNumberOfTrainingsByOneEmployeeInPeriodOfTime(employeeTO,
+                LocalDate.of(2018,10,1), LocalDate.of(2018,10,6)), is(1));
+        assertThat(employeeService.findNumberOfTrainingsByOneEmployeeInPeriodOfTime(employeeTO,
+                LocalDate.of(2018,10,1), LocalDate.of(2018,10,8)), is(2));
+        assertThat(employeeService.findNumberOfTrainingsByOneEmployeeInPeriodOfTime(employeeTO,
+                LocalDate.of(2018,10,10), LocalDate.of(2018,10,18)), is(0));
+
+    }
+
+    @Test
+    public void shouldFindTotalCostOfTrainingsByEmployee(){
+        // given
+        TrainingTO trainingTO1 = trainingService.addTrainingTOToDatabase(buildTrainingTOWithCost(2000));
+        TrainingTO trainingTO2 = trainingService.addTrainingTOToDatabase(buildTrainingTOWithCost(5000));
+        TrainingTO trainingTO3 = trainingService.addTrainingTOToDatabase(buildTrainingTOWithCost(7000));
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        // when
+        trainingService.addStudentToTraining(trainingTO1, employeeTO);
+        trainingService.addStudentToTraining(trainingTO2, employeeTO);
+        trainingService.addStudentToTraining(trainingTO3, employeeTO);
+        // then
+        assertThat(employeeService.findTotalcostOfTrainingsByEmployee(employeeTO), is(14000));
+
+    }
+
+    @Test
+    public void shouldFindOneEmployeeWithLongestTimeOnTrainingsAsStudents(){
+        // given
+        TrainingTO trainingTO1 = trainingService.addTrainingTOToDatabase(buildTrainingTOWithDuration(20d));
+        TrainingTO trainingTO2 = trainingService.addTrainingTOToDatabase(buildTrainingTOWithDuration(20d));
+        TrainingTO trainingTO3 = trainingService.addTrainingTOToDatabase(buildTrainingTOWithDuration(20d));
+        EmployeeTO employeeTO1 = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        EmployeeTO employeeTO2 = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        // when
+        trainingService.addStudentToTraining(trainingTO1, employeeTO1);
+        trainingService.addStudentToTraining(trainingTO1, employeeTO2);
+        trainingService.addStudentToTraining(trainingTO2, employeeTO2);
+        // then
+        assertThat(employeeService.findEmployeesWithLongestTimeOnTrainingsAsStudents().size(), is(1));
+        assertThat(employeeService.findEmployeesWithLongestTimeOnTrainingsAsStudents().iterator().next().getId(), is(employeeTO2.getId()));
+
+    }
+    @Test
+    public void shouldFindTwoEmployeesWithLongestTimeOnTrainingsAsStudents(){
+        // given
+        TrainingTO trainingTO1 = trainingService.addTrainingTOToDatabase(buildTrainingTOWithDuration(30d));
+        TrainingTO trainingTO2 = trainingService.addTrainingTOToDatabase(buildTrainingTOWithDuration(20d));
+        EmployeeTO employeeTO1 = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        EmployeeTO employeeTO2 = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        EmployeeTO employeeTO3 = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        // when
+        trainingService.addStudentToTraining(trainingTO1, employeeTO1);
+        trainingService.addStudentToTraining(trainingTO1, employeeTO2);
+        trainingService.addStudentToTraining(trainingTO2, employeeTO2);
+        trainingService.addStudentToTraining(trainingTO1, employeeTO3);
+        trainingService.addStudentToTraining(trainingTO2, employeeTO3);
+        // then
+        List<EmployeeTO> employeeTOList = employeeService.findEmployeesWithLongestTimeOnTrainingsAsStudents();
+        Iterator<EmployeeTO> iterator = employeeTOList.iterator();
+        assertThat(employeeTOList.size(), is(2));
+        assertThat(iterator.next().getId(), is(employeeTO2.getId()));
+        assertThat(iterator.next().getId(), is(employeeTO3.getId()));
 
     }
 
@@ -173,12 +245,54 @@ public class EmployeeServiceTest {
                 .setTrainingName("StarterKit")
                 .setTrainingCharacter(TrainingCharacter.EXTERNAL)
                 .setTags("Java, Spring")
-                .setStartDate(new Date(2018, 12, 1))
-                .setEndDate(new Date(2018, 12, 4))
+                .setStartDate(LocalDate.of(2018,12,4))
+                .setEndDate(LocalDate.of(2018, 12, 4))
                 .setDuration(4d)
                 .setCostPerStudent(2000)
                 .buildTrainingTO();
 
     }
 
+    private TrainingTO buildTrainingTOInTime(LocalDate startTime, LocalDate endTime) {
+        return new TrainingTOBuilder()
+                .setId(1L)
+                .setTrainingType(TrainingType.MANAGEMENT)
+                .setTrainingName("StarterKit")
+                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
+                .setTags("Java, Spring")
+                .setStartDate(startTime)
+                .setEndDate(endTime)
+                .setDuration(4d)
+                .setCostPerStudent(2000)
+                .buildTrainingTO();
+
+    }
+    private TrainingTO buildTrainingTOWithDuration(Double duration) {
+        return new TrainingTOBuilder()
+                .setId(1L)
+                .setTrainingType(TrainingType.MANAGEMENT)
+                .setTrainingName("StarterKit")
+                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
+                .setTags("Java, Spring")
+                .setStartDate(LocalDate.of(2018, 12, 1))
+                .setEndDate(LocalDate.of(2018, 12, 4))
+                .setDuration(duration)
+                .setCostPerStudent(5000)
+                .buildTrainingTO();
+
+    }
+    private TrainingTO buildTrainingTOWithCost(Integer cost) {
+        return new TrainingTOBuilder()
+                .setId(1L)
+                .setTrainingType(TrainingType.MANAGEMENT)
+                .setTrainingName("Spring")
+                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
+                .setTags("Java, Spring")
+                .setStartDate(LocalDate.of(2018, 12, 1))
+                .setEndDate(LocalDate.of(2018, 12, 4))
+                .setDuration(4d)
+                .setCostPerStudent(cost)
+                .buildTrainingTO();
+
+    }
 }

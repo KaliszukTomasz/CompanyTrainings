@@ -2,6 +2,7 @@ package com.capgemini.jstk.CompanyTrainings.service;
 
 import com.capgemini.jstk.CompanyTrainings.dao.EmployeeDao;
 import com.capgemini.jstk.CompanyTrainings.domain.EmployeeEntity;
+import com.capgemini.jstk.CompanyTrainings.domain.TrainingEntity;
 import com.capgemini.jstk.CompanyTrainings.exceptions.NoSuchEmployeeIdInDatabaseException;
 import com.capgemini.jstk.CompanyTrainings.mappers.EmployeeMapper;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -28,11 +30,27 @@ public class EmployeeService {
 
     }
 
-    public Double findNumerOfHoursEmployeeAsCoach(EmployeeTO employeeTO) {
+    public Double findNumerOfHoursEmployeeAsCoach(EmployeeTO employeeTO, int year) {
 
         EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
-        return employeeDao.findNumerOfHoursEmployeeAsCoach(employeeEntity);
+        return employeeDao.findNumerOfHoursEmployeeAsCoach(employeeEntity, year);
 
+    }
+
+    public int findNumberOfTrainingsByOneEmployeeInPeriodOfTime(EmployeeTO employeeTO, LocalDate startDate, LocalDate endDate) {
+        EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
+        List<TrainingEntity> trainingsList = employeeDao.findListOfTrainingsByOneEmployeeInPeriodOfTime
+                (employeeEntity, startDate, endDate);
+        return trainingsList.size();
+    }
+
+    public int findTotalcostOfTrainingsByEmployee(EmployeeTO employeeTO) {
+        return employeeDao.findTotalCostOfTrainingsByEmployee(employeeTO.getId());
+    }
+
+    public List<EmployeeTO> findEmployeesWithLongestTimeOnTrainingsAsStudents(){
+        List<EmployeeEntity> employeeEntitieList = employeeDao.findEmployeesWithLongestTimeOnTrainingsAsStudents();
+        return employeeMapper.mapEmployeeEntityList2EmployeeTOList(employeeEntitieList);
     }
 
     public EmployeeTO updateEmployeeInDatabase(EmployeeTO employeeTO) {
