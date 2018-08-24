@@ -28,10 +28,17 @@ public class EmployeeService {
 
     }
 
+    public Double findNumerOfHoursEmployeeAsCoach(EmployeeTO employeeTO) {
+
+        EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
+        return employeeDao.findNumerOfHoursEmployeeAsCoach(employeeEntity);
+
+    }
+
     public EmployeeTO updateEmployeeInDatabase(EmployeeTO employeeTO) {
 
         EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
-        if(employeeEntity.getVersion()!=employeeTO.getVersion()){
+        if (employeeEntity.getVersion() != employeeTO.getVersion()) {
             throw new OptimisticLockException();
         }
 
@@ -87,11 +94,9 @@ public class EmployeeService {
 
     }
 
-    public EmployeeEntity findOneEntity(Long employeeId){
+    public EmployeeEntity findOneEntity(Long employeeId) {
         return employeeDao.findOne(employeeId);
     }
-
-
 
 
 }

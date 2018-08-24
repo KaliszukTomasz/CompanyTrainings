@@ -1,11 +1,17 @@
 package com.capgemini.jstk.CompanyTrainings.service;
 
 
+import com.capgemini.jstk.CompanyTrainings.dao.EmployeeDao;
+import com.capgemini.jstk.CompanyTrainings.domain.EmployeeEntity;
 import com.capgemini.jstk.CompanyTrainings.enums.EmployeePosition;
 import com.capgemini.jstk.CompanyTrainings.enums.Grade;
+import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
+import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
 import com.capgemini.jstk.CompanyTrainings.exceptions.NoSuchEmployeeIdInDatabaseException;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
+import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 import com.capgemini.jstk.CompanyTrainings.types.builders.EmployeeTOBuilder;
+import com.capgemini.jstk.CompanyTrainings.types.builders.TrainingTOBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.matchers.Matches;
@@ -15,6 +21,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
+import javax.persistence.OptimisticLockException;
+import javax.transaction.Transactional;
+
+import java.util.Date;
+
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
@@ -26,6 +39,10 @@ public class EmployeeServiceTest {
 
     @Autowired
     EmployeeService employeeService;
+    @Autowired
+    EmployeeDao employeeDao;
+    @Autowired
+    TrainingService trainingService;
 
     @Test
     public void shouldAddNewEmployeeToDatabase() {
@@ -48,8 +65,24 @@ public class EmployeeServiceTest {
         employeeService.updateEmployeeInDatabase(employeeTO);
         // then
         assertThat(employeeService.findOne(employeeTO.getId()).getEmployeePosition(), is(EmployeePosition.MANAGER));
+    }
 
-
+    @Test
+    public void shouldCheckTimePersistAndUpdate() {
+        // given
+        // when
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        employeeTO.setGrade(Grade.FIFTH);
+//        EmployeeEntity employeeEntity1 = employeeDao.findOne(employeeTO.getId());
+        employeeService.updateEmployeeInDatabase(employeeTO);
+//        EmployeeEntity employeeEntity2 = employeeDao.findOne(employeeTO.getId());
+//        assertThat(employeeDao.findAll().size(), is(1));
+        // then
+//        assertThat(employeeEntity1.getCreateDate(), is(notNullValue()));
+//        assertThat(employeeEntity1.getUpdateDate(), is(nullValue()));
+//        assertThat(employeeEntity2.getCreateDate(), is(notNullValue()));
+////        assertThat(employeeEntity2.getUpdateDate(), is(notNullValue()));
+//        assertEquals(employeeEntity1.getCreateDate(), employeeEntity2.getCreateDate());
     }
 
     @Test
@@ -77,43 +110,49 @@ public class EmployeeServiceTest {
     }
 
     @Test
-    public void shouldThrowOptimisticLockingException(){
+    public void shouldThrowOptimisticLockingException() {
         // given
         EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
         employeeTO.setEmployeePosition(EmployeePosition.ACCOUNTANT);
         EmployeeTO newEmployeeTO = employeeService.findOne(employeeTO.getId());
         newEmployeeTO.setEmployeePosition(EmployeePosition.MANAGER);
         employeeService.updateEmployeeInDatabase(employeeTO);
-        employeeService.updateEmployeeInDatabase(newEmployeeTO);
+        // when
+        try {
+            employeeService.updateEmployeeInDatabase(newEmployeeTO);
+            Assert.fail("Optimistic Locking doesnt work!");
+        } catch (OptimisticLockException e) {
+            // Test pass, Optimistic locking work!
+        }
+    }
 
+    @Test
+    public void shouldCascadeDontRemoveTrainingWithEmployeeFromDatabase() {
+        // given
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        trainingService.addStudentToTraining(trainingTO, employeeTO);
+        // when
+        employeeService.removeEmployeeFromDatabase(employeeTO);
+        // then
+        assertThat(employeeService.findOne(employeeTO.getId()), is(nullValue()));
+        assertThat(trainingService.findOne(trainingTO.getId()), is(notNullValue()));
+        assertThat(trainingService.findSizeOfStudents(trainingTO.getId()), is(0));
+    }
 
-        //        // given
-//        ClientEntity clientEntity = buildClientEntity();
-//        clientEntity = clientDao.save(clientEntity);
-//        clientDao.flush();
-//        clientDao.detach(clientEntity);
-//        clientEntity.setFirstName("Tomek");
-//
-//        ClientEntity newClientEntity = clientDao.findOne(clientEntity.getId());
-//
-//        newClientEntity.setFirstName("first name");
-//        clientDao.save(newClientEntity);
-//        clientDao.flush();
-//
-//        // when
-//        try {
-//            ClientEntity clientEntity2 = clientDao.update(clientEntity);
-//            clientDao.save(clientEntity2);
-//
-//            // then
-//            Assert.fail("Expected that optimistoc loking not working");
-//
-//        } catch (ObjectOptimisticLockingFailureException e) {
-//            // Test pass. We expected optimistoc loking exception.
-//        }
+    @Test
+    public void shouldFindNumerOfHoursEmployeeAsCoach() {
 
-
-
+        // given
+        TrainingTO trainingTO1 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        TrainingTO trainingTO2 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        TrainingTO trainingTO3 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        // when
+        trainingService.addCoachToTraining(trainingTO1, employeeTO);
+        trainingService.addCoachToTraining(trainingTO2, employeeTO);
+        // then
+        assertThat(employeeService.findNumerOfHoursEmployeeAsCoach(employeeTO), is(8d));
 
     }
 
@@ -127,5 +166,19 @@ public class EmployeeServiceTest {
                 .buildEmployeeTO();
     }
 
+    private TrainingTO buildTrainingTO() {
+        return new TrainingTOBuilder()
+                .setId(1L)
+                .setTrainingType(TrainingType.MANAGEMENT)
+                .setTrainingName("StarterKit")
+                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
+                .setTags("Java, Spring")
+                .setStartDate(new Date(2018, 12, 1))
+                .setEndDate(new Date(2018, 12, 4))
+                .setDuration(4d)
+                .setCostPerStudent(2000)
+                .buildTrainingTO();
+
+    }
 
 }
