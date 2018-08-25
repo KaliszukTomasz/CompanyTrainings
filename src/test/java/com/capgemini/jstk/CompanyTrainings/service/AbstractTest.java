@@ -1,9 +1,6 @@
 package com.capgemini.jstk.CompanyTrainings.service;
 
-import com.capgemini.jstk.CompanyTrainings.enums.EmployeePosition;
-import com.capgemini.jstk.CompanyTrainings.enums.Grade;
-import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
-import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
+import com.capgemini.jstk.CompanyTrainings.enums.*;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 import com.capgemini.jstk.CompanyTrainings.types.builders.EmployeeTOBuilder;
@@ -30,10 +27,26 @@ public class AbstractTest {
                 .setTrainingName("StarterKit")
                 .setTrainingCharacter(TrainingCharacter.EXTERNAL)
                 .setTags("Java, Spring")
-                .setStartDate(LocalDate.of(2018,12,4))
+                .setStartDate(LocalDate.of(2018, 12, 4))
                 .setEndDate(LocalDate.of(2018, 12, 4))
                 .setDuration(4d)
                 .setCostPerStudent(2000)
+                .buildTrainingTO();
+
+    }
+
+    protected TrainingTO buildCanceledTrainingTO() {
+        return new TrainingTOBuilder()
+                .setId(1L)
+                .setTrainingType(TrainingType.MANAGEMENT)
+                .setTrainingName("StarterKit")
+                .setTrainingCharacter(TrainingCharacter.EXTERNAL)
+                .setTags("Java, Spring")
+                .setStartDate(LocalDate.of(2018, 12, 4))
+                .setEndDate(LocalDate.of(2018, 12, 4))
+                .setDuration(4d)
+                .setCostPerStudent(2000)
+                .setTrainingStatus(TrainingStatus.CANCELED)
                 .buildTrainingTO();
 
     }
@@ -52,6 +65,7 @@ public class AbstractTest {
                 .buildTrainingTO();
 
     }
+
     protected TrainingTO buildTrainingTOWithDuration(Double duration) {
         return new TrainingTOBuilder()
                 .setId(1L)
@@ -66,6 +80,7 @@ public class AbstractTest {
                 .buildTrainingTO();
 
     }
+
     protected TrainingTO buildTrainingTOWithCost(Integer cost) {
         return new TrainingTOBuilder()
                 .setId(1L)
@@ -125,4 +140,8 @@ public class AbstractTest {
                 .buildTrainingTO();
     }
 
+    protected TrainingTO cancelTraining(TrainingTO trainingTO, TrainingService trainingService) {
+        trainingTO.setTrainingStatus(TrainingStatus.CANCELED);
+        return trainingService.updateTrainingInDatabase(trainingTO);
+    }
 }
