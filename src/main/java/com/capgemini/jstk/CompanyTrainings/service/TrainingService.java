@@ -5,6 +5,7 @@ import com.capgemini.jstk.CompanyTrainings.dao.TrainingDao;
 import com.capgemini.jstk.CompanyTrainings.domain.EmployeeEntity;
 import com.capgemini.jstk.CompanyTrainings.domain.TrainingEntity;
 import com.capgemini.jstk.CompanyTrainings.enums.Grade;
+import com.capgemini.jstk.CompanyTrainings.enums.TrainingStatus;
 import com.capgemini.jstk.CompanyTrainings.exceptions.*;
 import com.capgemini.jstk.CompanyTrainings.mappers.TrainingMapper;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
@@ -84,6 +85,12 @@ public class TrainingService {
             trainingEntity.setTrainingType(trainingTO.getTrainingType());
         }
 
+        if (trainingTO.getTrainingStatus() != null){
+            if(trainingEntity.getTrainingStatus()!= TrainingStatus.CANCELED){
+            trainingEntity.setTrainingStatus(trainingTO.getTrainingStatus());}
+            else throw new CanceledTrainignStatusCantBeChangedException("This training has status CANCELED! You cant change it");
+        }
+
         trainingEntity = trainingDao.save(trainingEntity);
         return trainingMapper.mapTrainingEntity2TrainingTO(trainingEntity);
     }
@@ -136,6 +143,9 @@ public class TrainingService {
             throw new EmployeeIsAlreadyStudentDuringThisTrainingException(
                     "This Employee cant be student and coach during one training!");
         }
+        if(trainingEntity.getTrainingStatus() == TrainingStatus.CANCELED){
+            throw new EmployeeCantBeAddedToCanceledTrainingException("Employee cant be add to canceled training!");
+        }
         trainingEntity.addEmployeeToEmployeesAsCoaches(employeeEntity);
     }
 
@@ -152,8 +162,12 @@ public class TrainingService {
             throw new EmployeeIsAlreadyCoachDuringThisTrainingException(
                     "This Employee cant be student and coach during one training!");
         }
+        if(trainingEntity.getTrainingStatus() == TrainingStatus.CANCELED){
+            throw new EmployeeCantBeAddedToCanceledTrainingException("Employee cant be add to canceled training!");
+        }
         List<TrainingEntity> listOfTrainingsAsStudent = employeeEntity.getTrainingsAsStudent().stream().filter(
                 temp -> temp.getStartDate().getYear() == trainingEntity.getStartDate().getYear()).collect(Collectors.toList());
+        listOfTrainingsAsStudent = listOfTrainingsAsStudent.stream().filter(temp -> temp.getTrainingStatus() != TrainingStatus.CANCELED).collect(Collectors.toList());
 
         Integer totalBudgetInThisYear = listOfTrainingsAsStudent.stream().map(temp -> temp.getCostPerStudent()).reduce(0, (a, b) -> a + b);
         boolean conditionTrueIfOverTwoTrainingsByGradeUnderFourth = listOfTrainingsAsStudent.size() > 2;

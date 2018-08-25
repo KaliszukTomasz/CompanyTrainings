@@ -5,6 +5,7 @@ import com.capgemini.jstk.CompanyTrainings.domain.EmployeeEntity;
 import com.capgemini.jstk.CompanyTrainings.domain.QEmployeeEntity;
 import com.capgemini.jstk.CompanyTrainings.domain.QTrainingEntity;
 import com.capgemini.jstk.CompanyTrainings.domain.TrainingEntity;
+import com.capgemini.jstk.CompanyTrainings.enums.TrainingStatus;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.stereotype.Repository;
 
@@ -20,14 +21,16 @@ public class EmployeeDaoImpl implements EmployeeDaoCustom {
 
 
     @Override
-    public Double findNumerOfHoursEmployeeAsCoach(EmployeeEntity tempEmployeeEntity, int year) {
+    public Double findNumerOfHoursEmployeeAsCoachInYear(EmployeeEntity tempEmployeeEntity, int year) {
         JPAQuery<TrainingEntity> query = new JPAQuery(em);
         QTrainingEntity trainingEntity = QTrainingEntity.trainingEntity;
         QEmployeeEntity employeeEntity = QEmployeeEntity.employeeEntity;
         return query.select(trainingEntity.duration.sum())
                 .from(trainingEntity)
                 .leftJoin(trainingEntity.employeesAsCoaches, employeeEntity)
-                .where(employeeEntity.eq(tempEmployeeEntity).and(trainingEntity.startDate.year().eq(year)))
+                .where(employeeEntity.eq(tempEmployeeEntity)
+                        .and(trainingEntity.startDate.year().eq(year))
+                        .and(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED)))
                 .fetchOne();
 
     }
@@ -40,7 +43,9 @@ public class EmployeeDaoImpl implements EmployeeDaoCustom {
         return query.select(trainingEntity)
                 .from(trainingEntity)
                 .leftJoin(trainingEntity.employeesAsStudents, employeeEntity)
-                .where(employeeEntity.id.eq(tempEmployeeEntity.getId()).and(trainingEntity.endDate.between(startDate, endDate)))
+                .where(employeeEntity.id.eq(tempEmployeeEntity.getId())
+                        .and(trainingEntity.endDate.between(startDate, endDate))
+                        .and(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED)))
                 .fetch();
 
     }
@@ -53,7 +58,8 @@ public class EmployeeDaoImpl implements EmployeeDaoCustom {
         return query.select(trainingEntity.costPerStudent.sum())
                 .from(trainingEntity)
                 .leftJoin(trainingEntity.employeesAsStudents, employeeEntity)
-                .where(employeeEntity.id.eq(employeeId))
+                .where(employeeEntity.id.eq(employeeId)
+                        .and(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED)))
                 .fetchOne();
     }
 
@@ -66,6 +72,7 @@ public class EmployeeDaoImpl implements EmployeeDaoCustom {
         List<Double> sumDuration = query.select(trainingEntity.duration.sum())
                 .from(trainingEntity)
                 .leftJoin(trainingEntity.employeesAsStudents, employeeEntity)
+                .where(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED))
                 .groupBy(employeeEntity)
                 .fetch();
         Double maxDuration = sumDuration.stream().max(Double::compare).get();
@@ -73,6 +80,7 @@ public class EmployeeDaoImpl implements EmployeeDaoCustom {
         return query2.select(employeeEntity)
                 .from(trainingEntity)
                 .leftJoin(trainingEntity.employeesAsStudents, employeeEntity)
+                .where(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED))
                 .groupBy(employeeEntity)
                 .having(trainingEntity.duration.sum().eq(maxDuration))
                 .fetch();

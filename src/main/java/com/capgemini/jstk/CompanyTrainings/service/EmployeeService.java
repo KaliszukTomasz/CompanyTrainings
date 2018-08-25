@@ -33,7 +33,7 @@ public class EmployeeService {
     public Double findNumerOfHoursEmployeeAsCoach(EmployeeTO employeeTO, int year) {
 
         EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
-        return employeeDao.findNumerOfHoursEmployeeAsCoach(employeeEntity, year);
+        return employeeDao.findNumerOfHoursEmployeeAsCoachInYear(employeeEntity, year);
 
     }
 

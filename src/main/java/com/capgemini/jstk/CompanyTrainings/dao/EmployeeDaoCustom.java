@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface EmployeeDaoCustom {
 
-    Double findNumerOfHoursEmployeeAsCoach(EmployeeEntity employeeEntity, int year);
+    Double findNumerOfHoursEmployeeAsCoachInYear(EmployeeEntity employeeEntity, int year);
 
     List<TrainingEntity> findListOfTrainingsByOneEmployeeInPeriodOfTime(EmployeeEntity employeeEntity, LocalDate startDate, LocalDate endDate);
 

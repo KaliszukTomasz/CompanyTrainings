@@ -3,6 +3,8 @@ package com.capgemini.jstk.CompanyTrainings.dao.impl;
 import com.capgemini.jstk.CompanyTrainings.dao.TrainingDaoCustom;
 import com.capgemini.jstk.CompanyTrainings.domain.QTrainingEntity;
 import com.capgemini.jstk.CompanyTrainings.domain.TrainingEntity;
+import com.capgemini.jstk.CompanyTrainings.enums.TrainingStatus;
+import com.capgemini.jstk.CompanyTrainings.exceptions.SerachCriteriaObjectIsNullException;
 import com.capgemini.jstk.CompanyTrainings.types.SearchCriteriaObject;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -21,6 +23,11 @@ public class TrainingDaoImpl implements TrainingDaoCustom {
 
     @Override
     public List<TrainingEntity> findTrainingsByCriteria(SearchCriteriaObject critObj) {
+
+        if(critObj == null){
+            throw new SerachCriteriaObjectIsNullException("SearchCriteriaObjectCantBeNull");
+        }
+
         JPAQuery<TrainingEntity> query = new JPAQuery(em);
         QTrainingEntity trainingEntity = QTrainingEntity.trainingEntity;
 
@@ -56,18 +63,21 @@ public class TrainingDaoImpl implements TrainingDaoCustom {
 
         List<Long> countList = query.select(trainingEntity.count())
                 .from(trainingEntity)
+                .where(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED))
                 .groupBy(trainingEntity.trainingName).fetch();
         Long countMax = countList.stream().max(Long::compare).get();
 
         List<String> titleMaxCountList = query.select(trainingEntity.trainingName)
                 .from(trainingEntity)
+                .where(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED))
                 .groupBy(trainingEntity.trainingName)
                 .having(trainingEntity.count().eq(countMax))
                 .fetch();
 
         return query2.select(trainingEntity)
                 .from(trainingEntity)
-                .where(trainingEntity.trainingName.in(titleMaxCountList))
+                .where(trainingEntity.trainingName.in(titleMaxCountList)
+                    .and(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED)))
                 .fetch();
     }
 }
