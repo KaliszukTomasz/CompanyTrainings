@@ -45,7 +45,7 @@ public class TrainingService {
             throw new NoSuchTrainingIdInDatabaseException("No such training.id in database!");
         }
 
-        if (trainingEntity.getVersion() != trainingTO.getVersion()) {
+        if (!trainingEntity.getVersion().equals(trainingTO.getVersion())) {
             throw new OptimisticLockException();
         }
 
@@ -85,10 +85,11 @@ public class TrainingService {
             trainingEntity.setTrainingType(trainingTO.getTrainingType());
         }
 
-        if (trainingTO.getTrainingStatus() != null){
-            if(trainingEntity.getTrainingStatus()!= TrainingStatus.CANCELED){
-            trainingEntity.setTrainingStatus(trainingTO.getTrainingStatus());}
-            else throw new CanceledTrainignStatusCantBeChangedException("This training has status CANCELED! You cant change it");
+        if (trainingTO.getTrainingStatus() != null) {
+            if (trainingEntity.getTrainingStatus() != TrainingStatus.CANCELED) {
+                trainingEntity.setTrainingStatus(trainingTO.getTrainingStatus());
+            } else
+                throw new CanceledTrainignStatusCantBeChangedException("This training has status CANCELED! You cant change it");
         }
 
         trainingEntity = trainingDao.save(trainingEntity);
@@ -133,47 +134,80 @@ public class TrainingService {
     public void addCoachToTraining(TrainingTO trainingTO, EmployeeTO employeeTO) {
         TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
         EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
-        if (null == trainingEntity) {
-            throw new NoSuchTrainingIdInDatabaseException("No such training in database");
-        }
-        if (null == employeeEntity) {
-            throw new NoSuchEmployeeIdInDatabaseException("No such employee in database");
-        }
-        if (trainingEntity.getEmployeesAsStudents().contains(employeeEntity)) {
-            throw new EmployeeIsAlreadyStudentDuringThisTrainingException(
-                    "This Employee cant be student and coach during one training!");
-        }
-        if(trainingEntity.getTrainingStatus() == TrainingStatus.CANCELED){
-            throw new EmployeeCantBeAddedToCanceledTrainingException("Employee cant be add to canceled training!");
-        }
+        checkIfEntitiesNotNull(trainingEntity, employeeEntity);
+        checkIfEmployeeDontExistInThisTraining(trainingEntity, employeeEntity);
+        checkIfTrainingIsNotCanceled(trainingEntity);
         trainingEntity.addEmployeeToEmployeesAsCoaches(employeeEntity);
     }
 
     public void addStudentToTraining(TrainingTO trainingTO, EmployeeTO employeeTO) {
         TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
         EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
+        checkIfEntitiesNotNull(trainingEntity, employeeEntity);
+        checkIfEmployeeDontExistInThisTraining(trainingEntity, employeeEntity);
+        checkIfTrainingIsNotCanceled(trainingEntity);
+
+        List<TrainingEntity> listOfTrainingsAsStudent = employeeEntity.getTrainingsAsStudent().stream().filter(
+                temp -> temp.getStartDate().getYear() == trainingEntity.getStartDate().getYear()).collect(Collectors.toList());
+        listOfTrainingsAsStudent = listOfTrainingsAsStudent.stream().filter(temp -> temp.getTrainingStatus() != TrainingStatus.CANCELED).collect(Collectors.toList());
+
+        Integer totalBudgetInThisYear = listOfTrainingsAsStudent.stream().map(temp -> temp.getCostPerStudent()).reduce(0, (a, b) -> a + b);
+
+        checkBusinessConditionsToAddEmployeeAsStudentToTraining(employeeEntity, trainingEntity, totalBudgetInThisYear, listOfTrainingsAsStudent);
+
+        trainingEntity.addEmployeeToEmployeesAsStudent(employeeEntity);
+    }
+
+    public List<TrainingTO> findTrainingsBySearchCriteria(SearchCriteriaObject searchCriteriaObject) {
+
+        List<TrainingEntity> trainingEntityList = trainingDao.findTrainingsByCriteria(searchCriteriaObject);
+        return trainingMapper.mapTrainingEntityList2TrainingTOList(trainingEntityList);
+    }
+
+    public List<TrainingTO> findTrainingsWithTheHighestEdition() {
+
+        List<TrainingEntity> trainingEntityList = trainingDao.findTrainingsWithTheHighestEdition();
+        return trainingMapper.mapTrainingEntityList2TrainingTOList(trainingEntityList);
+
+    }
+
+    private void checkIfEntitiesNotNull(TrainingEntity trainingEntity, EmployeeEntity employeeEntity) {
+
         if (null == trainingEntity) {
             throw new NoSuchTrainingIdInDatabaseException("No such training in database");
         }
         if (null == employeeEntity) {
             throw new NoSuchEmployeeIdInDatabaseException("No such employee in database");
         }
+    }
+
+    private void checkIfEmployeeDontExistInThisTraining(TrainingEntity trainingEntity, EmployeeEntity employeeEntity) {
         if (trainingEntity.getEmployeesAsCoaches().contains(employeeEntity)) {
             throw new EmployeeIsAlreadyCoachDuringThisTrainingException(
                     "This Employee cant be student and coach during one training!");
         }
-        if(trainingEntity.getTrainingStatus() == TrainingStatus.CANCELED){
+
+        if (trainingEntity.getEmployeesAsStudents().contains(employeeEntity)) {
+            throw new EmployeeIsAlreadyStudentDuringThisTrainingException(
+                    "This employee is already as student");
+        }
+    }
+
+    private void checkIfTrainingIsNotCanceled(TrainingEntity trainingEntity) {
+        if (trainingEntity.getTrainingStatus() == TrainingStatus.CANCELED) {
             throw new EmployeeCantBeAddedToCanceledTrainingException("Employee cant be add to canceled training!");
         }
-        List<TrainingEntity> listOfTrainingsAsStudent = employeeEntity.getTrainingsAsStudent().stream().filter(
-                temp -> temp.getStartDate().getYear() == trainingEntity.getStartDate().getYear()).collect(Collectors.toList());
-        listOfTrainingsAsStudent = listOfTrainingsAsStudent.stream().filter(temp -> temp.getTrainingStatus() != TrainingStatus.CANCELED).collect(Collectors.toList());
+    }
 
-        Integer totalBudgetInThisYear = listOfTrainingsAsStudent.stream().map(temp -> temp.getCostPerStudent()).reduce(0, (a, b) -> a + b);
+    private void checkBusinessConditionsToAddEmployeeAsStudentToTraining(
+            EmployeeEntity employeeEntity, TrainingEntity trainingEntity,
+            int totalBudgetInThisYear, List<TrainingEntity> listOfTrainingsAsStudent){
+
         boolean conditionTrueIfOverTwoTrainingsByGradeUnderFourth = listOfTrainingsAsStudent.size() > 2;
         boolean conditionUnderFourthGrade = employeeEntity.getGrade().ordinal() < Grade.FOURTH.ordinal();
         boolean conditionTrueIfBudgetOver15K = trainingEntity.getCostPerStudent() + totalBudgetInThisYear > 15000;
         boolean conditionTrueIfBudgetOver50K = trainingEntity.getCostPerStudent() + totalBudgetInThisYear > 50000;
+
         if (conditionTrueIfOverTwoTrainingsByGradeUnderFourth && conditionUnderFourthGrade) {
             throw new TooManyTrainingsInThisYearException("Cant be more trainings in year of this training by grade under 4");
         }
@@ -184,20 +218,5 @@ public class TrainingService {
         if (!conditionUnderFourthGrade && conditionTrueIfBudgetOver50K) {
             throw new Budher50KLimitForEmployeeOverThirdGradeException("Budget over 50 000");
         }
-        trainingEntity.addEmployeeToEmployeesAsStudent(employeeEntity);
     }
-
-    public List<TrainingTO> findTrainingsBySearchCriteria(SearchCriteriaObject searchCriteriaObject) {
-
-        List<TrainingEntity> trainingEntityList = trainingDao.findTrainingsByCriteria(searchCriteriaObject);
-        return trainingMapper.mapTrainingEntityList2TrainingTOList(trainingEntityList);
-    }
-
-    public List<TrainingTO> findTrainingsWithTheHighestEdition(){
-
-        List<TrainingEntity> trainingEntityList = trainingDao.findTrainingsWithTheHighestEdition();
-        return trainingMapper.mapTrainingEntityList2TrainingTOList(trainingEntityList);
-
-    }
-
 }

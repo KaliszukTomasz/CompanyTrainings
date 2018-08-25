@@ -56,7 +56,11 @@ public class EmployeeService {
     public EmployeeTO updateEmployeeInDatabase(EmployeeTO employeeTO) {
 
         EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
-        if (employeeEntity.getVersion() != employeeTO.getVersion()) {
+
+        if(employeeEntity == null){
+            throw new NoSuchEmployeeIdInDatabaseException("No such employee in database");
+        }
+        if (!employeeEntity.getVersion().equals(employeeTO.getVersion())) {
             throw new OptimisticLockException();
         }
 
