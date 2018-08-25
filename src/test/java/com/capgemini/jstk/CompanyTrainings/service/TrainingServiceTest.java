@@ -1,26 +1,16 @@
 package com.capgemini.jstk.CompanyTrainings.service;
 
-import com.capgemini.jstk.CompanyTrainings.dao.TrainingDao;
-import com.capgemini.jstk.CompanyTrainings.domain.AbstractEntity;
-import com.capgemini.jstk.CompanyTrainings.enums.EmployeePosition;
 import com.capgemini.jstk.CompanyTrainings.enums.Grade;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
-import com.capgemini.jstk.CompanyTrainings.enums.TrainingType;
 import com.capgemini.jstk.CompanyTrainings.exceptions.*;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
-import com.capgemini.jstk.CompanyTrainings.types.SearchCriteriaObject;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
-import com.capgemini.jstk.CompanyTrainings.types.builders.EmployeeTOBuilder;
-import com.capgemini.jstk.CompanyTrainings.types.builders.SearchCriteriaObjectBuilder;
-import com.capgemini.jstk.CompanyTrainings.types.builders.TrainingTOBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -34,52 +24,62 @@ public class TrainingServiceTest extends AbstractTest {
     TrainingService trainingService;
     @Autowired
     EmployeeService employeeService;
-    @Autowired
-    TrainingDao trainingDao;
 
     @Test
-    public void shouldAddNewTrainingToDatabase() {
+    public void shouldAddNewTrainingToDatabaseTest() {
+
         // given
         int startSize = trainingService.findAllTrainingList().size();
         assertThat(trainingService.findAllTrainingList().size() - startSize, is(0));
+
         // when
         trainingService.addTrainingTOToDatabase(buildTrainingTO());
+
         // then
         assertThat(trainingService.findAllTrainingList().size() - startSize, is(1));
 
     }
 
     @Test
-    public void shouldUpdateTrainingInDatabase() {
+    public void shouldUpdateTrainingInDatabaseTest() {
+
         // given
         TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+
         // when
         trainingTO.setTrainingCharacter(TrainingCharacter.INTERNAL);
         trainingService.updateTrainingInDatabase(trainingTO);
+
         // then
         assertThat(trainingService.findOne(trainingTO.getId()).getTrainingCharacter(), is(TrainingCharacter.INTERNAL));
 
     }
 
     @Test
-    public void shouldRemoveTrainingFromDatabase() {
+    public void shouldRemoveTrainingFromDatabaseTest() {
+
         // given
         TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+
         // when
         trainingService.removeTrainingFromDatabase(trainingTO);
+
         // then
         assertThat(trainingService.findOne(trainingTO.getId()), is(nullValue()));
 
     }
 
     @Test
-    public void shouldThrowNoSuchTrainingInDatabaseException() {
+    public void shouldThrowNoSuchTrainingInDatabaseExceptionTest() {
+
         // given
         TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
         trainingService.removeTrainingFromDatabase(trainingTO);
+
         // when
         try {
             trainingService.removeTrainingFromDatabase(trainingTO);
+        // then
         } catch (NoSuchTrainingIdInDatabaseException e) {
             //Exception no such training in database
         }
@@ -87,22 +87,27 @@ public class TrainingServiceTest extends AbstractTest {
 
     @Test
     public void shouldAddEmployeeToTrainingCoachesTest() {
+
         // given
         TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
         EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
         assertThat(trainingService.findSizeOfCoaches(trainingTO.getId()), is(0));
+
         // when
         trainingService.addCoachToTraining(trainingTO, employeeTO);
+
         // then
         assertThat(trainingService.findSizeOfCoaches(trainingTO.getId()), is(1));
     }
 
     @Test
     public void shouldNOTAddEmployeeToTrainingCoachesWhenIsStudentAlreadyTest() {
+
         // given
         TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
         EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
         trainingService.addStudentToTraining(trainingTO, employeeTO);
+
         // when
         try {
             trainingService.addCoachToTraining(trainingTO, employeeTO);
@@ -116,10 +121,12 @@ public class TrainingServiceTest extends AbstractTest {
 
     @Test
     public void shouldNOTAddEmployeeToTrainingStudentsWhenIsCoachAlreadyTest() {
+
         // given
         TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
         EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
         trainingService.addCoachToTraining(trainingTO, employeeTO);
+
         // when
         try {
             trainingService.addStudentToTraining(trainingTO, employeeTO);
@@ -133,18 +140,22 @@ public class TrainingServiceTest extends AbstractTest {
 
     @Test
     public void shouldAddEmployeeToTrainingStudentsTest() {
+
         // given
         TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
         EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
         assertThat(trainingService.findSizeOfCoaches(trainingTO.getId()), is(0));
+
         // when
         trainingService.addStudentToTraining(trainingTO, employeeTO);
+
         // then
         assertThat(trainingService.findSizeOfStudents(trainingTO.getId()), is(1));
     }
 
     @Test
     public void shouldNOTAddEmployeeToFourthTrainingTest() {
+
         // given
         TrainingTO trainingTO1 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
         TrainingTO trainingTO2 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
@@ -154,6 +165,7 @@ public class TrainingServiceTest extends AbstractTest {
         trainingService.addStudentToTraining(trainingTO1, employeeTO);
         trainingService.addStudentToTraining(trainingTO2, employeeTO);
         trainingService.addStudentToTraining(trainingTO3, employeeTO);
+
         // when
         try {
             trainingService.addStudentToTraining(trainingTO4, employeeTO);
@@ -167,6 +179,7 @@ public class TrainingServiceTest extends AbstractTest {
 
     @Test
     public void shouldAddEmployeeToFourthTrainingWhenGradeOverThirdGradeTest() {
+
         // given
         TrainingTO trainingTO1 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
         TrainingTO trainingTO2 = trainingService.addTrainingTOToDatabase(buildTrainingTO());
@@ -215,6 +228,7 @@ public class TrainingServiceTest extends AbstractTest {
 
     @Test
     public void shouldNOTAddEmployeeToTrainingWhenGradeUnderFourthGradeAndBudgetOver15KTest() {
+
         // given
         TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(build20KCostTrainingTO());
 
@@ -230,64 +244,6 @@ public class TrainingServiceTest extends AbstractTest {
         }
     }
 
-    @Test
-    public void shouldFindTrainingsByCriteriaQueryWithTitleAndTypeTest() {
-        // given
-        SearchCriteriaObject searchCriteriaObject = new SearchCriteriaObjectBuilder()
-                .setMinCost(null)
-                .setMaxCost(null)
-                .setTag(null)
-                .setTitle("Java")
-                .setTrainingDate(null)
-                .setTrainingType(TrainingType.TECHNICAL)
-                .buildSearchCriteriaObject();
-        int startSize = trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size();
-        trainingService.addTrainingTOToDatabase(build20KCostTrainingTO());
-        trainingService.addTrainingTOToDatabase(buildTrainingTO());
-        // when
-        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(0));
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithTitleAndType("Java", TrainingType.TECHNICAL));
-        // then
-        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(1));
-    }
 
-    @Test
-    public void shouldFindTrainingsByCriteriaQueryWithMinAndMaxCostTest() {
-        // given
-        SearchCriteriaObject searchCriteriaObject = new SearchCriteriaObjectBuilder()
-                .setMinCost(1000)
-                .setMaxCost(3000)
-                .buildSearchCriteriaObject();
-        int startSize = trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size();
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithCost(5000));
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithCost(5000));
-        // when
-        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(0));
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithCost(2000));
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithCost(3000));
-        // then
-        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(2));
-    }
-
-    @Test
-    public void shouldFindTrainingsByCriteriaQueryWithDateTest() {
-        // given
-        SearchCriteriaObject searchCriteriaObject = new SearchCriteriaObjectBuilder()
-                .setTrainingDate(LocalDate.of(2018,5,6))
-                .buildSearchCriteriaObject();
-        int startSize = trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size();
-
-        // when
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018,05,05), LocalDate.of(2018,05,10)));
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018,05,07), LocalDate.of(2018,05,10)));
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018,06,05), LocalDate.of(2018,06,10)));
-
-        // then
-        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(1));
-        searchCriteriaObject.setTrainingDate(LocalDate.of(2018,5,9));
-        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(2));
-        searchCriteriaObject.setTrainingDate(LocalDate.of(2018,5,20));
-        assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(0));
-    }
 
 }
