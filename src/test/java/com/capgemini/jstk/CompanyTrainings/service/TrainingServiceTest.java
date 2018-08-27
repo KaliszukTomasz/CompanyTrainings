@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -70,6 +71,28 @@ public class TrainingServiceTest extends AbstractTest {
 
         // then
         assertThat(trainingService.findOne(trainingTO.getId()), is(nullValue()));
+
+    }
+    @Test
+    public void shouldRemoveTrainingAndNOTRemoveEmployeeFromDatabaseTest() {
+
+        // given
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO1 = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        EmployeeTO employeeTO2 = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        ExternalCoachTO externalCoachTO = externalCoachService.addExternalCoachToDatabase(buildCoachTO());
+        trainingService.addStudentToTraining(trainingTO, employeeTO1);
+        trainingService.addCoachToTraining(trainingTO, employeeTO2);
+        trainingService.addExternalCoachToTraining(trainingTO,externalCoachTO);
+
+        // when
+        trainingService.removeTrainingFromDatabase(trainingTO);
+
+        // then
+        assertThat(trainingService.findOne(trainingTO.getId()), is(nullValue()));
+        assertThat(employeeService.findOne(employeeTO1.getId()), is(notNullValue()));
+        assertThat(employeeService.findOne(employeeTO2.getId()), is(notNullValue()));
+        assertThat(externalCoachService.findOne(externalCoachTO.getId()), is(notNullValue()));
 
     }
 

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,6 +111,9 @@ public class TrainingServiceImpl implements TrainingService {
         if (trainingDao.findOne(trainingTO.getId()) == null) {
             throw new NoSuchTrainingIdInDatabaseException("No such training.ID in database!");
         }
+
+        removeReferencesToTraining(trainingTO);
+
         trainingDao.delete(trainingTO.getId());
     }
 
@@ -212,7 +216,6 @@ public class TrainingServiceImpl implements TrainingService {
 
         trainingEntity.removeEmployeeFromEmployeesAsStudent(employeeEntity);
 
-
     }
 
     @Override
@@ -289,5 +292,24 @@ public class TrainingServiceImpl implements TrainingService {
         }
     }
 
+    private void removeReferencesToTraining(TrainingTO trainingTO){
+        Iterator<ExternalCoachEntity> iteratorExCoaches = trainingDao.findOne(trainingTO.getId()).getExternalCoaches().iterator();
+        while(iteratorExCoaches.hasNext()){
+            Long exCouchId = iteratorExCoaches.next().getId();
+            externalCoachDao.findOne(exCouchId).removeTrainingFromTrainingsAsExternalCoach(trainingDao.getOne(trainingTO.getId()));
+        }
+
+        Iterator<EmployeeEntity> iteratorCoaches = trainingDao.findOne(trainingTO.getId()).getEmployeesAsCoaches().iterator();
+        while(iteratorCoaches.hasNext()){
+            Long emplCoachId = iteratorCoaches.next().getId();
+            employeeDao.findOne(emplCoachId).removeTrainingFromTrainingsAsCoach(trainingDao.getOne(trainingTO.getId()));
+        }
+
+        Iterator<EmployeeEntity> iteratorStudents = trainingDao.findOne(trainingTO.getId()).getEmployeesAsStudents().iterator();
+        while(iteratorStudents.hasNext()){
+            Long emplStudentId = iteratorStudents.next().getId();
+            employeeDao.findOne(emplStudentId).removeTrainingFromTrainingsAsStudent(trainingDao.getOne(trainingTO.getId()));
+        }
+    }
 
 }
