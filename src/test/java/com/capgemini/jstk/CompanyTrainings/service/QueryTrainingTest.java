@@ -75,20 +75,20 @@ public class QueryTrainingTest extends AbstractTest {
 
         // given
         SearchCriteriaObject searchCriteriaObject = new SearchCriteriaObjectBuilder()
-                .setTrainingDate(LocalDate.of(2018,5,6))
+                .setTrainingDate(LocalDate.of(2018, 5, 6))
                 .buildSearchCriteriaObject();
         int startSize = trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size();
 
         // when
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018,05,05), LocalDate.of(2018,05,10)));
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018,05,07), LocalDate.of(2018,05,10)));
-        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018,06,05), LocalDate.of(2018,06,10)));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018, 05, 05), LocalDate.of(2018, 05, 10)));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018, 05, 07), LocalDate.of(2018, 05, 10)));
+        trainingService.addTrainingTOToDatabase(buildTrainingTOWithDate(LocalDate.of(2018, 06, 05), LocalDate.of(2018, 06, 10)));
 
         // then
         assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(1));
-        searchCriteriaObject.setTrainingDate(LocalDate.of(2018,5,9));
+        searchCriteriaObject.setTrainingDate(LocalDate.of(2018, 5, 9));
         assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(2));
-        searchCriteriaObject.setTrainingDate(LocalDate.of(2018,5,20));
+        searchCriteriaObject.setTrainingDate(LocalDate.of(2018, 5, 20));
         assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(0));
     }
 
@@ -148,7 +148,7 @@ public class QueryTrainingTest extends AbstractTest {
         trainingService.addTrainingTOToDatabase(buildTrainingTOWithTitleAndType("Java", TrainingType.TECHNICAL));
         trainingService.addTrainingTOToDatabase(buildTrainingTOWithTitleAndType("Java", TrainingType.TECHNICAL));
         trainingService.addTrainingTOToDatabase(buildTrainingTOWithTitleAndType("Spring", TrainingType.TECHNICAL));
-        TrainingTO trainingTO =trainingService.addTrainingTOToDatabase(buildTrainingTOWithTitleAndType("Spring", TrainingType.TECHNICAL));
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTOWithTitleAndType("Spring", TrainingType.TECHNICAL));
         trainingService.addTrainingTOToDatabase(buildTrainingTOWithTitleAndType("JavaScript", TrainingType.TECHNICAL));
 
         cancelTraining(trainingTO, trainingService);

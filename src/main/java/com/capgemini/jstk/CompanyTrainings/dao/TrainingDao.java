@@ -14,7 +14,4 @@ public interface TrainingDao extends JpaRepository<TrainingEntity, Long>, Traini
     TrainingEntity getOne(Long id);
     void delete(Long id);
 
-
-
-
 }

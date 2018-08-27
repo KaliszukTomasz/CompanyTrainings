@@ -25,7 +25,7 @@ public class ExternalCoachServiceImpl implements ExternalCoachService {
     ExternalCoachMapper externalCoachMapper;
 
     @Override
-    public ExternalCoachTO addExternalCoachToDatabase(ExternalCoachTO externalCoachTO){
+    public ExternalCoachTO addExternalCoachToDatabase(ExternalCoachTO externalCoachTO) {
 
         ExternalCoachEntity externalCoachEntity = externalCoachMapper.mapExternalCoachTO2ExternalCoachEntity(externalCoachTO);
         externalCoachEntity = externalCoachDao.save(externalCoachEntity);
@@ -64,7 +64,7 @@ public class ExternalCoachServiceImpl implements ExternalCoachService {
     public void removeExternalCoachFromDatabase(ExternalCoachTO externalCoachTO) {
 
         if (externalCoachDao.findOne(externalCoachTO.getId()) == null) {
-            throw new NoSuchExternalCoachIdInDatabaseException ("No such externalCoach.ID in database!");
+            throw new NoSuchExternalCoachIdInDatabaseException("No such externalCoach.ID in database!");
         }
         externalCoachDao.delete(externalCoachTO.getId());
     }

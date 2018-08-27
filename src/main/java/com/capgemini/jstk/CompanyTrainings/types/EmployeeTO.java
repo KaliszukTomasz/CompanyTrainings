@@ -9,12 +9,12 @@ import lombok.Setter;
 @Setter
 public class EmployeeTO {
 
-private Long version;
-private Long id;
-private String firstName;
-private String lastName;
-private EmployeePosition employeePosition;
-private Grade grade;
+    private Long version;
+    private Long id;
+    private String firstName;
+    private String lastName;
+    private EmployeePosition employeePosition;
+    private Grade grade;
 
     public EmployeeTO() {
     }

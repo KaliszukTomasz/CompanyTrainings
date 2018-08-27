@@ -146,7 +146,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 
-
     private void checkIfEntitiesNotNull(TrainingEntity trainingEntity, EmployeeEntity employeeEntity) {
 
         if (null == trainingEntity) {

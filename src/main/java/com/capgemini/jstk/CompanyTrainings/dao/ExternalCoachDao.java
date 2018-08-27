@@ -17,5 +17,4 @@ public interface ExternalCoachDao extends JpaRepository<ExternalCoachEntity, Lon
     void delete(Long id);
     List<ExternalCoachEntity> findAll();
 
-
 }

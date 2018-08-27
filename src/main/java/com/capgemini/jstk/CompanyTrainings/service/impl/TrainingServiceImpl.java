@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -206,7 +205,7 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public void removeEmployeeFromEmployeesAsStudents(TrainingTO trainingTO, EmployeeTO employeeTO){
+    public void removeEmployeeFromEmployeesAsStudents(TrainingTO trainingTO, EmployeeTO employeeTO) {
         TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
         EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
         checkIfEntitiesNotNull(trainingEntity, employeeEntity);
@@ -281,11 +280,11 @@ public class TrainingServiceImpl implements TrainingService {
         }
     }
 
-    private void checkIfTrainingAndExternalCoachExist(TrainingEntity trainingEntity, ExternalCoachEntity externalCoachEntity){
-        if(trainingEntity == null ){
+    private void checkIfTrainingAndExternalCoachExist(TrainingEntity trainingEntity, ExternalCoachEntity externalCoachEntity) {
+        if (trainingEntity == null) {
             throw new NoSuchTrainingIdInDatabaseException("No such training in database");
         }
-        if(externalCoachEntity == null){
+        if (externalCoachEntity == null) {
             throw new NoSuchExternalCoachIdInDatabaseException("No such ExternalCoach in database");
         }
     }

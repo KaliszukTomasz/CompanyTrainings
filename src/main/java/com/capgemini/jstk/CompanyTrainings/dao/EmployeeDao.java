@@ -14,5 +14,4 @@ public interface EmployeeDao extends JpaRepository<EmployeeEntity, Long>, Employ
     EmployeeEntity findOne(Long id);
     void delete(Long id);
 
-
 }

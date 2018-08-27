@@ -70,7 +70,7 @@ public class TrainingTOBuilder {
         return this;
     }
 
-    public TrainingTOBuilder setTrainingStatus(TrainingStatus trainingStatus){
+    public TrainingTOBuilder setTrainingStatus(TrainingStatus trainingStatus) {
         this.trainingStatus = trainingStatus;
         return this;
     }

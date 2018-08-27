@@ -24,7 +24,7 @@ public class TrainingDaoImpl implements TrainingDaoCustom {
     @Override
     public List<TrainingEntity> findTrainingsByCriteria(SearchCriteriaObject critObj) {
 
-        if(critObj == null){
+        if (critObj == null) {
             throw new SerachCriteriaObjectIsNullException("SearchCriteriaObjectCantBeNull");
         }
 
@@ -80,7 +80,7 @@ public class TrainingDaoImpl implements TrainingDaoCustom {
         return query3.select(trainingEntity)
                 .from(trainingEntity)
                 .where(trainingEntity.trainingName.in(titleMaxCountList)
-                    .and(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED)))
+                        .and(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED)))
                 .fetch();
     }
 }

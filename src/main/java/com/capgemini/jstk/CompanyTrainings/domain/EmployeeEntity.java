@@ -45,15 +45,14 @@ public class EmployeeEntity extends AbstractEntity {
     }
 
 
-
-    public TrainingEntity removeTrainingFromTrainingsAsCoach(TrainingEntity trainingEntity){
+    public TrainingEntity removeTrainingFromTrainingsAsCoach(TrainingEntity trainingEntity) {
         trainingsAsCoach.remove(trainingEntity);
         trainingEntity.getEmployeesAsCoaches().remove(this);
         return trainingEntity;
     }
 
 
-    public TrainingEntity removeTrainingFromTrainingsAsStudent(TrainingEntity trainingEntity){
+    public TrainingEntity removeTrainingFromTrainingsAsStudent(TrainingEntity trainingEntity) {
         trainingsAsStudent.remove(trainingEntity);
         trainingEntity.getEmployeesAsStudents().remove(this);
         return trainingEntity;

@@ -3,7 +3,6 @@ package com.capgemini.jstk.CompanyTrainings.service;
 import com.capgemini.jstk.CompanyTrainings.enums.Grade;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
 import com.capgemini.jstk.CompanyTrainings.exceptions.*;
-import com.capgemini.jstk.CompanyTrainings.service.impl.EmployeeServiceImpl;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
 import com.capgemini.jstk.CompanyTrainings.types.ExternalCoachTO;
 import com.capgemini.jstk.CompanyTrainings.types.SearchCriteriaObject;
@@ -297,7 +296,7 @@ public class TrainingServiceTest extends AbstractTest {
     }
 
     @Test
-    public void shouldAddExternalCoachToTrainingTest(){
+    public void shouldAddExternalCoachToTrainingTest() {
 
         // given
         ExternalCoachTO externalCoachTO = externalCoachService.addExternalCoachToDatabase(buildCoachTO());
@@ -313,7 +312,7 @@ public class TrainingServiceTest extends AbstractTest {
     }
 
     @Test
-    public void shouldRemoveExternalCoachFromTrainingTest(){
+    public void shouldRemoveExternalCoachFromTrainingTest() {
         // given
         ExternalCoachTO externalCoachTO = externalCoachService.addExternalCoachToDatabase(buildCoachTO());
         TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
@@ -324,7 +323,6 @@ public class TrainingServiceTest extends AbstractTest {
         trainingService.removeExternalCoachFromTraining(trainingTO, externalCoachTO);
         // then
         assertThat(trainingService.findSizeOfExternalCoach(trainingTO.getId()), is(0));
-
 
 
     }

@@ -13,7 +13,7 @@ import static java.time.Instant.now;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
-public class AbstractEntity implements Serializable{
+public class AbstractEntity implements Serializable {
 
     @Column(name = "create_date")
     private Date createDate;
@@ -27,11 +27,12 @@ public class AbstractEntity implements Serializable{
 
 
     @PrePersist
-    public void generateActualCreateDate(){
+    public void generateActualCreateDate() {
         setCreateDate(Date.from(now()));
     }
+
     @PreUpdate
-    public void generateActualUpdateDate(){
+    public void generateActualUpdateDate() {
         setUpdateDate(Date.from(now()));
     }
 

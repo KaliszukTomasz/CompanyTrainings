@@ -1,9 +1,7 @@
 package com.capgemini.jstk.CompanyTrainings.service;
 
 import com.capgemini.jstk.CompanyTrainings.exceptions.NoSuchExternalCoachIdInDatabaseException;
-import com.capgemini.jstk.CompanyTrainings.mappers.ExternalCoachMapper;
 import com.capgemini.jstk.CompanyTrainings.types.ExternalCoachTO;
-import com.capgemini.jstk.CompanyTrainings.types.builders.ExternalCoachTOBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +21,7 @@ public class ExternalCoachServiceTest extends AbstractTest {
     ExternalCoachService externalCoachService;
 
     @Test
-    public void shouldAddNewEmployeeToDatabaseTest() {
+    public void shouldAddNewExternalCoachToDatabaseTest() {
 
         // given
         int startSize = externalCoachService.findAllCoachList().size();
@@ -38,7 +36,7 @@ public class ExternalCoachServiceTest extends AbstractTest {
     }
 
     @Test
-    public void shouldUpdateEmployeeInDatabaseTest() {
+    public void shouldUpdateExternalCoachInDatabaseTest() {
 
         // given
         ExternalCoachTO externalCoachTO = externalCoachService.addExternalCoachToDatabase(buildCoachTO());
@@ -52,7 +50,7 @@ public class ExternalCoachServiceTest extends AbstractTest {
     }
 
     @Test
-    public void shouldRemoveEmployeeFromDatabaseTest() {
+    public void shouldRemoveExternalCoachFromDatabaseTest() {
 
         // given
         ExternalCoachTO externalCoachTO = externalCoachService.addExternalCoachToDatabase(buildCoachTO());
