@@ -1,7 +1,7 @@
 package com.capgemini.jstk.CompanyTrainings.exceptions;
 
-public class NoSuchEmployeeIdInDatabaseException extends RuntimeException{
-    public NoSuchEmployeeIdInDatabaseException(String message) {
+public class NoSuchExternalCoachIdInDatabaseException extends RuntimeException{
+    public NoSuchExternalCoachIdInDatabaseException(String message) {
         super(message);
     }
 }

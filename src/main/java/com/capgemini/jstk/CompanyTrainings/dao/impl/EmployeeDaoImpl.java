@@ -69,20 +69,20 @@ public class EmployeeDaoImpl implements EmployeeDaoCustom {
         JPAQuery<TrainingEntity> query2 = new JPAQuery<>(em);
         QTrainingEntity trainingEntity = QTrainingEntity.trainingEntity;
         QEmployeeEntity employeeEntity = QEmployeeEntity.employeeEntity;
-        List<Double> sumDuration = query.select(trainingEntity.duration.sum())
+        Double maxSumDuration = query.select(trainingEntity.duration.sum())
                 .from(trainingEntity)
                 .leftJoin(trainingEntity.employeesAsStudents, employeeEntity)
                 .where(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED))
                 .groupBy(employeeEntity)
-                .fetch();
-        Double maxDuration = sumDuration.stream().max(Double::compare).get();
-
+                .orderBy(trainingEntity.duration.sum().desc())
+                .limit(1)
+                .fetchOne();
         return query2.select(employeeEntity)
                 .from(trainingEntity)
                 .leftJoin(trainingEntity.employeesAsStudents, employeeEntity)
                 .where(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED))
                 .groupBy(employeeEntity)
-                .having(trainingEntity.duration.sum().eq(maxDuration))
+                .having(trainingEntity.duration.sum().eq(maxSumDuration))
                 .fetch();
     }
 }

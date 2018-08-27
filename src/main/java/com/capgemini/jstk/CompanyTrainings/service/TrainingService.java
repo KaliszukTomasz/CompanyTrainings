@@ -1,6 +1,7 @@
 package com.capgemini.jstk.CompanyTrainings.service;
 
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
+import com.capgemini.jstk.CompanyTrainings.types.ExternalCoachTO;
 import com.capgemini.jstk.CompanyTrainings.types.SearchCriteriaObject;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 
@@ -23,6 +24,8 @@ public interface TrainingService {
 
     void addCoachToTraining(TrainingTO trainingTO, EmployeeTO employeeTO);
 
+    void addExternalCoachToTraining(TrainingTO trainingTO, ExternalCoachTO externalCoachTO);
+
     void addStudentToTraining(TrainingTO trainingTO, EmployeeTO employeeTO);
 
     List<TrainingTO> findTrainingsBySearchCriteria(SearchCriteriaObject searchCriteriaObject);
@@ -32,4 +35,8 @@ public interface TrainingService {
     void removeEmployeeFromEmployeesAsCoaches(TrainingTO trainingTO, EmployeeTO employeeTO);
 
     void removeEmployeeFromEmployeesAsStudents(TrainingTO trainingTO, EmployeeTO employeeTO);
+
+    void removeExternalCoachFromTraining(TrainingTO trainingTO, ExternalCoachTO externalCoachTO);
+
+    int findSizeOfExternalCoach(Long trainingId);
 }

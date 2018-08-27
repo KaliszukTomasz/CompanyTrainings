@@ -59,22 +59,25 @@ public class TrainingDaoImpl implements TrainingDaoCustom {
     public List<TrainingEntity> findTrainingsWithTheHighestEdition() {
         JPAQuery<TrainingEntity> query = new JPAQuery(em);
         JPAQuery<TrainingEntity> query2 = new JPAQuery(em);
+        JPAQuery<TrainingEntity> query3 = new JPAQuery(em);
         QTrainingEntity trainingEntity = QTrainingEntity.trainingEntity;
 
-        List<Long> countList = query.select(trainingEntity.count())
-                .from(trainingEntity)
-                .where(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED))
-                .groupBy(trainingEntity.trainingName).fetch();
-        Long countMax = countList.stream().max(Long::compare).get();
-
-        List<String> titleMaxCountList = query.select(trainingEntity.trainingName)
+        Long maxCount = query.select(trainingEntity.count())
                 .from(trainingEntity)
                 .where(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED))
                 .groupBy(trainingEntity.trainingName)
-                .having(trainingEntity.count().eq(countMax))
+                .orderBy(trainingEntity.count().desc())
+                .limit(1)
+                .fetchOne();
+
+        List<String> titleMaxCountList = query2.select(trainingEntity.trainingName)
+                .from(trainingEntity)
+                .where(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED))
+                .groupBy(trainingEntity.trainingName)
+                .having(trainingEntity.count().eq(maxCount))
                 .fetch();
 
-        return query2.select(trainingEntity)
+        return query3.select(trainingEntity)
                 .from(trainingEntity)
                 .where(trainingEntity.trainingName.in(titleMaxCountList)
                     .and(trainingEntity.trainingStatus.ne(TrainingStatus.CANCELED)))

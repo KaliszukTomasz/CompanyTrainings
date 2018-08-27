@@ -1,8 +1,10 @@
 package com.capgemini.jstk.CompanyTrainings.service.impl;
 
 import com.capgemini.jstk.CompanyTrainings.dao.EmployeeDao;
+import com.capgemini.jstk.CompanyTrainings.dao.ExternalCoachDao;
 import com.capgemini.jstk.CompanyTrainings.dao.TrainingDao;
 import com.capgemini.jstk.CompanyTrainings.domain.EmployeeEntity;
+import com.capgemini.jstk.CompanyTrainings.domain.ExternalCoachEntity;
 import com.capgemini.jstk.CompanyTrainings.domain.TrainingEntity;
 import com.capgemini.jstk.CompanyTrainings.enums.Grade;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingStatus;
@@ -10,6 +12,7 @@ import com.capgemini.jstk.CompanyTrainings.exceptions.*;
 import com.capgemini.jstk.CompanyTrainings.mappers.TrainingMapper;
 import com.capgemini.jstk.CompanyTrainings.service.TrainingService;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
+import com.capgemini.jstk.CompanyTrainings.types.ExternalCoachTO;
 import com.capgemini.jstk.CompanyTrainings.types.SearchCriteriaObject;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +34,8 @@ public class TrainingServiceImpl implements TrainingService {
     TrainingMapper trainingMapper;
     @Autowired
     EmployeeDao employeeDao;
+    @Autowired
+    ExternalCoachDao externalCoachDao;
 
     @Override
     public TrainingTO addTrainingTOToDatabase(TrainingTO trainingTO) {
@@ -146,6 +152,16 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
+    public void addExternalCoachToTraining(TrainingTO trainingTO, ExternalCoachTO externalCoachTO) {
+        TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
+        ExternalCoachEntity externalCoachEntity = externalCoachDao.findOne(externalCoachTO.getId());
+        checkIfTrainingAndExternalCoachExist(trainingEntity, externalCoachEntity);
+        checkIfTrainingIsNotCanceled(trainingEntity);
+        trainingEntity.addExternalCoachToExternalCoaches(externalCoachEntity);
+
+    }
+
+    @Override
     public void addStudentToTraining(TrainingTO trainingTO, EmployeeTO employeeTO) {
         TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
         EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
@@ -200,6 +216,21 @@ public class TrainingServiceImpl implements TrainingService {
 
     }
 
+    @Override
+    public void removeExternalCoachFromTraining(TrainingTO trainingTO, ExternalCoachTO externalCoachTO) {
+
+        TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
+        ExternalCoachEntity externalCoachEntity = externalCoachDao.findOne(externalCoachTO.getId());
+        checkIfTrainingAndExternalCoachExist(trainingEntity, externalCoachEntity);
+
+        trainingEntity.removeExternalCoachFromExternalCoaches(externalCoachEntity);
+    }
+
+    @Override
+    public int findSizeOfExternalCoach(Long trainingId) {
+        return trainingDao.findOne(trainingId).getExternalCoaches().size();
+    }
+
 
     private void checkIfEntitiesNotNull(TrainingEntity trainingEntity, EmployeeEntity employeeEntity) {
 
@@ -249,4 +280,15 @@ public class TrainingServiceImpl implements TrainingService {
             throw new Budher50KLimitForEmployeeOverThirdGradeException("Budget over 50 000");
         }
     }
+
+    private void checkIfTrainingAndExternalCoachExist(TrainingEntity trainingEntity, ExternalCoachEntity externalCoachEntity){
+        if(trainingEntity == null ){
+            throw new NoSuchTrainingIdInDatabaseException("No such training in database");
+        }
+        if(externalCoachEntity == null){
+            throw new NoSuchExternalCoachIdInDatabaseException("No such ExternalCoach in database");
+        }
+    }
+
+
 }
