@@ -25,8 +25,6 @@ public class QueryTrainingTest extends AbstractTest {
 
     @Autowired
     TrainingService trainingService;
-    @Autowired
-    EmployeeService employeeService;
 
     @Test
     public void shouldFindTrainingsByCriteriaQueryWithTitleAndTypeTest() {

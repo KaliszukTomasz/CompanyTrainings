@@ -1,6 +1,6 @@
 package com.capgemini.jstk.CompanyTrainings.service;
 
-import com.capgemini.jstk.CompanyTrainings.enums.TrainingStatus;
+import com.capgemini.jstk.CompanyTrainings.service.impl.EmployeeServiceImpl;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 import org.junit.Test;

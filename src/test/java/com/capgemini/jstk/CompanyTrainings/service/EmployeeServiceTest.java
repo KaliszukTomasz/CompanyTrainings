@@ -9,6 +9,7 @@ import com.capgemini.jstk.CompanyTrainings.enums.TrainingStatus;
 import com.capgemini.jstk.CompanyTrainings.exceptions.CanceledTrainignStatusCantBeChangedException;
 import com.capgemini.jstk.CompanyTrainings.exceptions.EmployeeCantBeAddedToCanceledTrainingException;
 import com.capgemini.jstk.CompanyTrainings.exceptions.NoSuchEmployeeIdInDatabaseException;
+import com.capgemini.jstk.CompanyTrainings.service.impl.EmployeeServiceImpl;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 import org.junit.Assert;
@@ -210,6 +211,36 @@ public class EmployeeServiceTest extends AbstractTest {
         // then
         trainingService.addStudentToTraining(trainingTO4, employeeTO);
         // test pass -> student was added to 4. training (3. is canceled)
+    }
+
+    @Test
+    public void shouldAddAndRemoveTrainingToAndFromTrainingAsStudentTest() {
+
+        // given
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        trainingService.addStudentToTraining(trainingTO, employeeTO);
+        assertThat(trainingService.findSizeOfStudents(trainingTO.getId()), is(1));
+
+        // when
+        employeeService.removeTrainingFromTrainingsAsStudent(trainingTO, employeeTO);
+        // then
+        assertThat(trainingService.findSizeOfStudents(trainingTO.getId()), is(0));
+    }
+
+    @Test
+    public void shouldAddAndRemoveTrainingToAndFromTrainingAsCoachTest() {
+
+        // given
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        trainingService.addCoachToTraining(trainingTO, employeeTO);
+        assertThat(trainingService.findSizeOfCoaches(trainingTO.getId()), is(1));
+
+        // when
+        employeeService.removeTrainingFromTrainingsAsCoaches(trainingTO, employeeTO);
+        // then
+        assertThat(trainingService.findSizeOfCoaches(trainingTO.getId()), is(0));
     }
 
 

@@ -3,7 +3,9 @@ package com.capgemini.jstk.CompanyTrainings.service;
 import com.capgemini.jstk.CompanyTrainings.enums.Grade;
 import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
 import com.capgemini.jstk.CompanyTrainings.exceptions.*;
+import com.capgemini.jstk.CompanyTrainings.service.impl.EmployeeServiceImpl;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
+import com.capgemini.jstk.CompanyTrainings.types.SearchCriteriaObject;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 import org.junit.Assert;
 import org.junit.Test;
@@ -79,7 +81,7 @@ public class TrainingServiceTest extends AbstractTest {
         // when
         try {
             trainingService.removeTrainingFromDatabase(trainingTO);
-        // then
+            // then
         } catch (NoSuchTrainingIdInDatabaseException e) {
             //Exception no such training in database
         }
@@ -244,6 +246,51 @@ public class TrainingServiceTest extends AbstractTest {
         }
     }
 
+    @Test
+    public void shouldThrowSerachCriteriaObjectIsNullExceptionTest() {
+        // given
+        SearchCriteriaObject searchCriteriaObject = null;
+        // when
+        try {
+            trainingService.findTrainingsBySearchCriteria(searchCriteriaObject);
+            Assert.fail("Exception wasn't thrown");
+            // then
+        } catch (SerachCriteriaObjectIsNullException e) {
+            // test pass
+        }
 
+    }
+
+    @Test
+    public void shouldAddAndRemoveEmployeeToAndFromTrainingAsCoachTest() {
+
+        // given
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        trainingService.addCoachToTraining(trainingTO, employeeTO);
+        assertThat(trainingService.findSizeOfCoaches(trainingTO.getId()), is(1));
+
+        // when
+        trainingService.removeEmployeeFromEmployeesAsCoaches(trainingTO, employeeTO);
+
+        // then
+        assertThat(trainingService.findSizeOfCoaches(trainingTO.getId()), is(0));
+    }
+
+    @Test
+    public void shouldAddAndRemoveEmployeeToAndFromTrainingAsStudentTest() {
+
+        // given
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        EmployeeTO employeeTO = employeeService.addEmployeeToDatabase(buildEmployeeTO());
+        trainingService.addStudentToTraining(trainingTO, employeeTO);
+        assertThat(trainingService.findSizeOfStudents(trainingTO.getId()), is(1));
+
+        // when
+        trainingService.removeEmployeeFromEmployeesAsStudents(trainingTO, employeeTO);
+
+        // then
+        assertThat(trainingService.findSizeOfStudents(trainingTO.getId()), is(0));
+    }
 
 }
