@@ -1,15 +1,17 @@
 package com.capgemini.jstk.CompanyTrainings.service;
 
+import com.capgemini.jstk.CompanyTrainings.types.ExternalCoachTO;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
 
-import javax.transaction.Transactional;
+public interface ExternalCoachService {
+    ExternalCoachTO addExternalCoachToDatabase(ExternalCoachTO externalCoachTO);
 
-@Service
-@Transactional
-public class ExternalCoachService {
+    ExternalCoachTO updateExternalCoachInDatabase(ExternalCoachTO externalCoachTO);
 
+    void removeExternalCoachFromDatabase(ExternalCoachTO externalCoachTO);
 
+    List<ExternalCoachTO> findAllCoachList();
 
-
+    ExternalCoachTO findOne(Long coachId);
 }

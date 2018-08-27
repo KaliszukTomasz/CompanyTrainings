@@ -2,8 +2,10 @@ package com.capgemini.jstk.CompanyTrainings.service;
 
 import com.capgemini.jstk.CompanyTrainings.enums.*;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
+import com.capgemini.jstk.CompanyTrainings.types.ExternalCoachTO;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 import com.capgemini.jstk.CompanyTrainings.types.builders.EmployeeTOBuilder;
+import com.capgemini.jstk.CompanyTrainings.types.builders.ExternalCoachTOBuilder;
 import com.capgemini.jstk.CompanyTrainings.types.builders.TrainingTOBuilder;
 
 import java.time.LocalDate;
@@ -143,5 +145,15 @@ public class AbstractTest {
     protected TrainingTO cancelTraining(TrainingTO trainingTO, TrainingService trainingService) {
         trainingTO.setTrainingStatus(TrainingStatus.CANCELED);
         return trainingService.updateTrainingInDatabase(trainingTO);
+    }
+
+    protected ExternalCoachTO buildCoachTO() {
+
+        return new ExternalCoachTOBuilder()
+                .setFirstName("Jan")
+                .setLastName("Kowal")
+                .setCompany("Capgemini")
+                .buildExternalCoachTO();
+
     }
 }

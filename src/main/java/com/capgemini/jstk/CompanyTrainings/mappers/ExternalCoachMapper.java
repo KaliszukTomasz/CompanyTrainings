@@ -6,6 +6,9 @@ import com.capgemini.jstk.CompanyTrainings.types.ExternalCoachTO;
 import com.capgemini.jstk.CompanyTrainings.types.builders.ExternalCoachTOBuilder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class ExternalCoachMapper {
 
@@ -28,8 +31,19 @@ public class ExternalCoachMapper {
                 .setLastName(externalCoachTO.getLastName())
                 .setCompany(externalCoachTO.getCompany())
                 .buildExternalCoachEntity();
+    }
 
+    public List<ExternalCoachTO> mapExternalCoachEntityList2ExtCoachTOList(List<ExternalCoachEntity> listEntitys) {
 
+        return listEntitys.stream().map(coachEntity -> {
+            return new ExternalCoachTOBuilder()
+                    .setVersion(coachEntity.getVersion())
+                    .setId(coachEntity.getId())
+                    .setFirstName(coachEntity.getFirstName())
+                    .setLastName(coachEntity.getLastName())
+                    .setCompany(coachEntity.getCompany())
+                    .buildExternalCoachTO();
+        }).collect(Collectors.toList());
     }
 
 }
