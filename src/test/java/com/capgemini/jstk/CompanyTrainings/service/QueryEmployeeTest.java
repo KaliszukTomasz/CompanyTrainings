@@ -19,7 +19,6 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = "spring.profiles.active=hsql")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class QueryEmployeeTest extends AbstractTest {
 
     @Autowired
@@ -151,6 +150,7 @@ public class QueryEmployeeTest extends AbstractTest {
 
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void shouldFindOneEmployeeWithLongestTimeOnTrainingsAsStudentsTest() {
 
@@ -172,6 +172,7 @@ public class QueryEmployeeTest extends AbstractTest {
 
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void shouldFindTwoEmployeesWithLongestTimeOnTrainingsAsStudentsTest() {
 
@@ -198,6 +199,7 @@ public class QueryEmployeeTest extends AbstractTest {
 
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void shouldFindOnlyOneEmployeeWithLongestTimeOnTrainingsAsStudentsCauseCanceledTest() {
 

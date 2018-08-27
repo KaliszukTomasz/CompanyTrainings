@@ -5,6 +5,7 @@ import com.capgemini.jstk.CompanyTrainings.enums.TrainingCharacter;
 import com.capgemini.jstk.CompanyTrainings.exceptions.*;
 import com.capgemini.jstk.CompanyTrainings.service.impl.EmployeeServiceImpl;
 import com.capgemini.jstk.CompanyTrainings.types.EmployeeTO;
+import com.capgemini.jstk.CompanyTrainings.types.ExternalCoachTO;
 import com.capgemini.jstk.CompanyTrainings.types.SearchCriteriaObject;
 import com.capgemini.jstk.CompanyTrainings.types.TrainingTO;
 import org.junit.Assert;
@@ -26,6 +27,8 @@ public class TrainingServiceTest extends AbstractTest {
     TrainingService trainingService;
     @Autowired
     EmployeeService employeeService;
+    @Autowired
+    ExternalCoachService externalCoachService;
 
     @Test
     public void shouldAddNewTrainingToDatabaseTest() {
@@ -293,4 +296,36 @@ public class TrainingServiceTest extends AbstractTest {
         assertThat(trainingService.findSizeOfStudents(trainingTO.getId()), is(0));
     }
 
+    @Test
+    public void shouldAddExternalCoachToTrainingTest(){
+
+        // given
+        ExternalCoachTO externalCoachTO = externalCoachService.addExternalCoachToDatabase(buildCoachTO());
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        assertThat(trainingService.findSizeOfExternalCoach(trainingTO.getId()), is(0));
+
+        // when
+        trainingService.addExternalCoachToTraining(trainingTO, externalCoachTO);
+
+        // then
+        assertThat(trainingService.findSizeOfExternalCoach(trainingTO.getId()), is(1));
+
+    }
+
+    @Test
+    public void shouldRemoveExternalCoachFromTrainingTest(){
+        // given
+        ExternalCoachTO externalCoachTO = externalCoachService.addExternalCoachToDatabase(buildCoachTO());
+        TrainingTO trainingTO = trainingService.addTrainingTOToDatabase(buildTrainingTO());
+        trainingService.addExternalCoachToTraining(trainingTO, externalCoachTO);
+        assertThat(trainingService.findSizeOfExternalCoach(trainingTO.getId()), is(1));
+
+        // when
+        trainingService.removeExternalCoachFromTraining(trainingTO, externalCoachTO);
+        // then
+        assertThat(trainingService.findSizeOfExternalCoach(trainingTO.getId()), is(0));
+
+
+
+    }
 }

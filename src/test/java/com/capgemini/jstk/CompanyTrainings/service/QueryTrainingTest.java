@@ -20,7 +20,6 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = "spring.profiles.active=hsql")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class QueryTrainingTest extends AbstractTest {
 
     @Autowired
@@ -93,6 +92,7 @@ public class QueryTrainingTest extends AbstractTest {
         assertThat(trainingService.findTrainingsBySearchCriteria(searchCriteriaObject).size() - startSize, is(0));
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void shouldFindTrainingsWithTheHighestEditionTest() {
 
@@ -117,6 +117,7 @@ public class QueryTrainingTest extends AbstractTest {
         assertThat(iterator.next().getId(), is(trainingTO4.getId()));
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void shouldFindDwoTitlesTrainingsWithTheHighestEditionTest() {
 
@@ -139,6 +140,7 @@ public class QueryTrainingTest extends AbstractTest {
         assertThat(iterator.next().getTrainingName(), is("Spring"));
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void shouldFindOnlyOneTileTrainingWithTheHighestEditionCauseCanceledStatusTest() {
 
