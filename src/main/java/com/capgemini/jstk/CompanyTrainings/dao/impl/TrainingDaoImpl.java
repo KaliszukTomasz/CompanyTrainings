@@ -20,7 +20,18 @@ public class TrainingDaoImpl implements TrainingDaoCustom {
     @PersistenceContext
     EntityManager em;
 
-
+    /**
+     * find training by criteria from given critObj
+     *
+     * @param critObj given SearchCriteriaObject with:
+     *                String title;
+     *                TrainingType trainingType;
+     *                LocalDate trainingDate;
+     *                Integer minCost;
+     *                Integer maxCost;
+     *                String tag;
+     * @return list of trainingEntity
+     */
     @Override
     public List<TrainingEntity> findTrainingsByCriteria(SearchCriteriaObject critObj) {
 
@@ -55,6 +66,10 @@ public class TrainingDaoImpl implements TrainingDaoCustom {
         return query.from(trainingEntity).where(condition).fetch();
     }
 
+    /**
+     * find trainings with the highest edition - with max number of trainings with the same title
+     * @return list of TrainingEntity objects
+     */
     @Override
     public List<TrainingEntity> findTrainingsWithTheHighestEdition() {
         JPAQuery<TrainingEntity> query = new JPAQuery(em);

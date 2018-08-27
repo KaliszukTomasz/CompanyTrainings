@@ -24,6 +24,11 @@ public class ExternalCoachServiceImpl implements ExternalCoachService {
     @Autowired
     ExternalCoachMapper externalCoachMapper;
 
+    /**
+     * add new external coach to database
+     * @param externalCoachTO given external coach
+     * @return externalCoachTO with id from database
+     */
     @Override
     public ExternalCoachTO addExternalCoachToDatabase(ExternalCoachTO externalCoachTO) {
 
@@ -33,7 +38,11 @@ public class ExternalCoachServiceImpl implements ExternalCoachService {
 
     }
 
-
+    /**
+     * update external coach with params from given TO object
+     * @param externalCoachTO given TO object
+     * @return updated TO object
+     */
     @Override
     public ExternalCoachTO updateExternalCoachInDatabase(ExternalCoachTO externalCoachTO) {
 
@@ -60,6 +69,10 @@ public class ExternalCoachServiceImpl implements ExternalCoachService {
         return externalCoachMapper.mapExternalCoachEntity2ExternalCoachTO(externalCoachEntity);
     }
 
+    /**
+     * remove external coach from database with id from given TO object
+     * @param externalCoachTO given TO object
+     */
     @Override
     public void removeExternalCoachFromDatabase(ExternalCoachTO externalCoachTO) {
 
@@ -69,6 +82,10 @@ public class ExternalCoachServiceImpl implements ExternalCoachService {
         externalCoachDao.delete(externalCoachTO.getId());
     }
 
+    /**
+     * find list of ExternalCoachTO objects
+     * @return List of ExternalCoachTO
+     */
     @Override
     public List<ExternalCoachTO> findAllCoachList() {
 
@@ -76,6 +93,11 @@ public class ExternalCoachServiceImpl implements ExternalCoachService {
 
     }
 
+    /**
+     * find one externalCoachTO with id from given long
+     * @param coachId given long
+     * @return ExternalCoachTO
+     */
     @Override
     public ExternalCoachTO findOne(Long coachId) {
 

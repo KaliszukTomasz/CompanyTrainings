@@ -28,6 +28,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     EmployeeMapper employeeMapper;
 
+    /**
+     * Add new Employee to database
+     * @param employeeTO - TO with params new employee
+     * @return EmployeeTO with id
+     */
     @Override
     public EmployeeTO addEmployeeToDatabase(EmployeeTO employeeTO) {
 
@@ -37,6 +42,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    /**
+     * Find number of hours during trainings for employee as coach
+     * @param employeeTO given employee
+     * @param year given year to proof
+     * @return number of hours during trainings for employee as coach
+     */
     @Override
     public Double findNumerOfHoursEmployeeAsCoach(EmployeeTO employeeTO, int year) {
 
@@ -45,6 +56,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    /**
+     * find number of trainings for one employee during period start - end
+     * @param employeeTO given employee
+     * @param startDate given startDate
+     * @param endDate given endDate
+     * @return number of trainings for one employee during period start - end
+     */
     @Override
     public int findNumberOfTrainingsByOneEmployeeInPeriodOfTime(EmployeeTO employeeTO, LocalDate startDate, LocalDate endDate) {
         EmployeeEntity employeeEntity = employeeDao.findOne(employeeTO.getId());
@@ -53,17 +71,31 @@ public class EmployeeServiceImpl implements EmployeeService {
         return trainingsList.size();
     }
 
+    /**
+     * Find total cost of trainings for given employee as student
+     * @param employeeTO given employee
+     * @return total cost of trainings for given employee as student
+     */
     @Override
-    public int findTotalcostOfTrainingsByEmployee(EmployeeTO employeeTO) {
+    public int findTotalCostOfTrainingsByEmployee(EmployeeTO employeeTO) {
         return employeeDao.findTotalCostOfTrainingsByEmployee(employeeTO.getId());
     }
 
+    /**
+     * Find employeeTO objects with longest time on training as students
+     * @return List of employeeTO objects with longest time on training as students
+     */
     @Override
     public List<EmployeeTO> findEmployeesWithLongestTimeOnTrainingsAsStudents() {
         List<EmployeeEntity> employeeEntitieList = employeeDao.findEmployeesWithLongestTimeOnTrainingsAsStudents();
         return employeeMapper.mapEmployeeEntityList2EmployeeTOList(employeeEntitieList);
     }
 
+    /**
+     * Update employee in database
+     * @param employeeTO given employeeTO with new parameters
+     * @return updated EmployeeTO
+     */
     @Override
     public EmployeeTO updateEmployeeInDatabase(EmployeeTO employeeTO) {
 
@@ -98,6 +130,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    /**
+     * remove employee from database
+     * @param employeeTO removed employee
+     */
     @Override
     public void removeEmployeeFromDatabase(EmployeeTO employeeTO) {
 
@@ -108,6 +144,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    /**
+     * find all employee from database
+     * @return list of employeeTO objects
+     */
     @Override
     public List<EmployeeTO> findAllEmployeeList() {
 
@@ -115,6 +155,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    /**
+     * find one employee from database with given id
+     * @param employeeId given employeeId
+     * @return
+     */
     @Override
     public EmployeeTO findOne(Long employeeId) {
 
@@ -126,6 +171,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    /**
+     * remove training from employee list - training as coach
+     * @param trainingTO given training to remove
+     * @param employeeTO given employee
+     */
     @Override
     public void removeTrainingFromTrainingsAsCoaches(TrainingTO trainingTO, EmployeeTO employeeTO) {
         TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
@@ -136,6 +186,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    /**
+     * remove training from employee list with trainings as student
+     * @param trainingTO given training to remove
+     * @param employeeTO given employee
+     */
     @Override
     public void removeTrainingFromTrainingsAsStudent(TrainingTO trainingTO, EmployeeTO employeeTO) {
         TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());

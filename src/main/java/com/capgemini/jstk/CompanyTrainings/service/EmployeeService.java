@@ -13,7 +13,7 @@ public interface EmployeeService {
 
     int findNumberOfTrainingsByOneEmployeeInPeriodOfTime(EmployeeTO employeeTO, LocalDate startDate, LocalDate endDate);
 
-    int findTotalcostOfTrainingsByEmployee(EmployeeTO employeeTO);
+    int findTotalCostOfTrainingsByEmployee(EmployeeTO employeeTO);
 
     List<EmployeeTO> findEmployeesWithLongestTimeOnTrainingsAsStudents();
 

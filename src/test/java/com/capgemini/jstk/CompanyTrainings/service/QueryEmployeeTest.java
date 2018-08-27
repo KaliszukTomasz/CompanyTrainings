@@ -125,7 +125,7 @@ public class QueryEmployeeTest extends AbstractTest {
         trainingService.addStudentToTraining(trainingTO3, employeeTO);
 
         // then
-        assertThat(employeeService.findTotalcostOfTrainingsByEmployee(employeeTO), is(14000));
+        assertThat(employeeService.findTotalCostOfTrainingsByEmployee(employeeTO), is(14000));
 
     }
 
@@ -145,7 +145,7 @@ public class QueryEmployeeTest extends AbstractTest {
         cancelTraining(trainingTO3, trainingService);
 
         // then
-        assertThat(employeeService.findTotalcostOfTrainingsByEmployee(employeeTO), is(7000));
+        assertThat(employeeService.findTotalCostOfTrainingsByEmployee(employeeTO), is(7000));
 
     }
 

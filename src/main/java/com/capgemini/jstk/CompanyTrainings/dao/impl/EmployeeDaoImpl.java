@@ -19,7 +19,12 @@ public class EmployeeDaoImpl implements EmployeeDaoCustom {
     @PersistenceContext
     EntityManager em;
 
-
+    /**
+     * find number of hours by one employee as coach in given year
+     * @param tempEmployeeEntity given employeeEntity
+     * @param year given year
+     * @return
+     */
     @Override
     public Double findNumerOfHoursEmployeeAsCoachInYear(EmployeeEntity tempEmployeeEntity, int year) {
         JPAQuery<TrainingEntity> query = new JPAQuery(em);
@@ -35,6 +40,13 @@ public class EmployeeDaoImpl implements EmployeeDaoCustom {
 
     }
 
+    /**
+     * find list of trainings for one employee during period from start to end
+     * @param tempEmployeeEntity given employee
+     * @param startDate given start date
+     * @param endDate given end date
+     * @return list of TrainingEntity objects
+     */
     @Override
     public List<TrainingEntity> findListOfTrainingsByOneEmployeeInPeriodOfTime(EmployeeEntity tempEmployeeEntity, LocalDate startDate, LocalDate endDate) {
         JPAQuery<TrainingEntity> query = new JPAQuery<>(em);
@@ -50,6 +62,11 @@ public class EmployeeDaoImpl implements EmployeeDaoCustom {
 
     }
 
+    /**
+     * find total cost of trainings for one employee with given id
+     * @param employeeId given employeeID
+     * @return amount of cost all trainings during was a student
+     */
     @Override
     public Integer findTotalCostOfTrainingsByEmployee(Long employeeId) {
         JPAQuery<TrainingEntity> query = new JPAQuery<>(em);
@@ -63,6 +80,10 @@ public class EmployeeDaoImpl implements EmployeeDaoCustom {
                 .fetchOne();
     }
 
+    /**
+     * find employees with longest time on training as students
+     * @return list of EmployeeEntity objects
+     */
     @Override
     public List<EmployeeEntity> findEmployeesWithLongestTimeOnTrainingsAsStudents() {
         JPAQuery<TrainingEntity> query = new JPAQuery<>(em);

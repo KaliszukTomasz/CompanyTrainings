@@ -37,6 +37,11 @@ public class TrainingServiceImpl implements TrainingService {
     @Autowired
     ExternalCoachDao externalCoachDao;
 
+    /**
+     * add new training with params from given TO Object to database
+     * @param trainingTO given TO object
+     * @return TrainingTO with id from database
+     */
     @Override
     public TrainingTO addTrainingTOToDatabase(TrainingTO trainingTO) {
 
@@ -46,6 +51,11 @@ public class TrainingServiceImpl implements TrainingService {
 
     }
 
+    /**
+     * update training in database with params from given trainingTO
+     * @param trainingTO given TO object
+     * @return new updated TrainingTO object
+     */
     @Override
     public TrainingTO updateTrainingInDatabase(TrainingTO trainingTO) {
 
@@ -105,6 +115,10 @@ public class TrainingServiceImpl implements TrainingService {
         return trainingMapper.mapTrainingEntity2TrainingTO(trainingEntity);
     }
 
+    /**
+     * remove training with id from given trainingTO object from database
+     * @param trainingTO TO object with training id to remove
+     */
     @Override
     public void removeTrainingFromDatabase(TrainingTO trainingTO) {
 
@@ -117,6 +131,10 @@ public class TrainingServiceImpl implements TrainingService {
         trainingDao.delete(trainingTO.getId());
     }
 
+    /**
+     * find list of trainings from database
+     * @return List of trainingTO objects
+     */
     @Override
     public List<TrainingTO> findAllTrainingList() {
 
@@ -124,6 +142,11 @@ public class TrainingServiceImpl implements TrainingService {
 
     }
 
+    /**
+     * find one training with id like given Long
+     * @param trainingID given long
+     * @return trainingTO from database
+     */
     @Override
     public TrainingTO findOne(Long trainingID) {
 
@@ -134,16 +157,31 @@ public class TrainingServiceImpl implements TrainingService {
         return trainingMapper.mapTrainingEntity2TrainingTO(trainingEntity);
     }
 
+    /**
+     * find number of coaches from training with given id
+     * @param trainingID given trainingID
+     * @return number od coaches from training with given id
+     */
     @Override
     public int findSizeOfCoaches(Long trainingID) {
         return trainingDao.findOne(trainingID).getEmployeesAsCoaches().size();
     }
 
+    /**
+     * find number of students from training with given id
+     * @param trainingID given trainingID
+     * @return umber of students from training with given id
+     */
     @Override
     public int findSizeOfStudents(Long trainingID) {
         return trainingDao.findOne(trainingID).getEmployeesAsStudents().size();
     }
 
+    /**
+     * assign coach to training
+     * @param trainingTO given training
+     * @param employeeTO given employee
+     */
     @Override
     public void addCoachToTraining(TrainingTO trainingTO, EmployeeTO employeeTO) {
         TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
@@ -154,6 +192,11 @@ public class TrainingServiceImpl implements TrainingService {
         trainingEntity.addEmployeeToEmployeesAsCoaches(employeeEntity);
     }
 
+    /**
+     * assign externalCoach to training
+     * @param trainingTO given training
+     * @param externalCoachTO given externalCoach
+     */
     @Override
     public void addExternalCoachToTraining(TrainingTO trainingTO, ExternalCoachTO externalCoachTO) {
         TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
@@ -164,6 +207,11 @@ public class TrainingServiceImpl implements TrainingService {
 
     }
 
+    /**
+     * assign studentEmployee to training
+     * @param trainingTO given training
+     * @param employeeTO given employee
+     */
     @Override
     public void addStudentToTraining(TrainingTO trainingTO, EmployeeTO employeeTO) {
         TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
@@ -183,6 +231,11 @@ public class TrainingServiceImpl implements TrainingService {
         trainingEntity.addEmployeeToEmployeesAsStudent(employeeEntity);
     }
 
+    /**
+     * find list of trainings by search criteria ( title, trianingType, trainingdate, minCost, max Cost and tag)
+     * @param searchCriteriaObject object with search params
+     * @return list of trainingsTO objects
+     */
     @Override
     public List<TrainingTO> findTrainingsBySearchCriteria(SearchCriteriaObject searchCriteriaObject) {
 
@@ -190,6 +243,10 @@ public class TrainingServiceImpl implements TrainingService {
         return trainingMapper.mapTrainingEntityList2TrainingTOList(trainingEntityList);
     }
 
+    /**
+     * find trainings with highest edition -< max quantity of trainings with the same title
+     * @return list of TrainingTO objects
+     */
     @Override
     public List<TrainingTO> findTrainingsWithTheHighestEdition() {
 
@@ -198,6 +255,11 @@ public class TrainingServiceImpl implements TrainingService {
 
     }
 
+    /**
+     * remove employee from list employees as coaches from training
+     * @param trainingTO given training
+     * @param employeeTO given employee
+     */
     @Override
     public void removeEmployeeFromEmployeesAsCoaches(TrainingTO trainingTO, EmployeeTO employeeTO) {
         TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
@@ -208,6 +270,11 @@ public class TrainingServiceImpl implements TrainingService {
 
     }
 
+    /**
+     * remove employee from list employees as students from training
+     * @param trainingTO given training
+     * @param employeeTO given employee
+     */
     @Override
     public void removeEmployeeFromEmployeesAsStudents(TrainingTO trainingTO, EmployeeTO employeeTO) {
         TrainingEntity trainingEntity = trainingDao.findOne(trainingTO.getId());
@@ -218,6 +285,11 @@ public class TrainingServiceImpl implements TrainingService {
 
     }
 
+    /**
+     * remove extranal coach from list with external coaches from training
+     * @param trainingTO given training
+     * @param externalCoachTO given external coach
+     */
     @Override
     public void removeExternalCoachFromTraining(TrainingTO trainingTO, ExternalCoachTO externalCoachTO) {
 
@@ -228,12 +300,21 @@ public class TrainingServiceImpl implements TrainingService {
         trainingEntity.removeExternalCoachFromExternalCoaches(externalCoachEntity);
     }
 
+    /**
+     * find number of external coaches from given training
+     * @param trainingId given trianing
+     * @return size of collection of external coaches
+     */
     @Override
     public int findSizeOfExternalCoach(Long trainingId) {
         return trainingDao.findOne(trainingId).getExternalCoaches().size();
     }
 
-
+    /**
+     * check if given trianingEntity and employeeEntity is'nt null
+     * @param trainingEntity given training
+     * @param employeeEntity given employee
+     */
     private void checkIfEntitiesNotNull(TrainingEntity trainingEntity, EmployeeEntity employeeEntity) {
 
         if (null == trainingEntity) {
@@ -262,6 +343,17 @@ public class TrainingServiceImpl implements TrainingService {
         }
     }
 
+    /**
+     * check if:
+     * a) list from employeeEntity with trainings as student is not greater than 2
+     * b) employee's grade is under FOURTH grade
+     * c) budget for this year for this employee is not over 15 000
+     * d) budget for this year for this employee is not over 50 000
+     * @param employeeEntity given employee
+     * @param trainingEntity given training
+     * @param totalBudgetInThisYear total budget
+     * @param listOfTrainingsAsStudent list of trainings for given employee
+     */
     private void checkBusinessConditionsToAddEmployeeAsStudentToTraining(
             EmployeeEntity employeeEntity, TrainingEntity trainingEntity,
             int totalBudgetInThisYear, List<TrainingEntity> listOfTrainingsAsStudent) {
@@ -292,6 +384,10 @@ public class TrainingServiceImpl implements TrainingService {
         }
     }
 
+    /**
+     * remove all references from training to remove training from database
+     * @param trainingTO given training
+     */
     private void removeReferencesToTraining(TrainingTO trainingTO){
         Iterator<ExternalCoachEntity> iteratorExCoaches = trainingDao.findOne(trainingTO.getId()).getExternalCoaches().iterator();
         while(iteratorExCoaches.hasNext()){
