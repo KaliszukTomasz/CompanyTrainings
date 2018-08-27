@@ -11,7 +11,7 @@ public interface EmployeeDao extends JpaRepository<EmployeeEntity, Long>, Employ
 
     List<EmployeeEntity> findAll();
     EmployeeEntity save(EmployeeEntity employeeEntity);
-    EmployeeEntity getOne(Long id);
+    EmployeeEntity findOne(Long id);
     void delete(Long id);
 
 

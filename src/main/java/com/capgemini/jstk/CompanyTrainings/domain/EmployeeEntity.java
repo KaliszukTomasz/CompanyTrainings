@@ -44,10 +44,7 @@ public class EmployeeEntity extends AbstractEntity {
     public EmployeeEntity() {
     }
 
-    public void addTrainingToTrainingsAsCoach(TrainingEntity trainingEntity){
-        trainingsAsCoach.add(trainingEntity);
-        trainingEntity.getEmployeesAsCoaches().add(this);
-    }
+
 
     public TrainingEntity removeTrainingFromTrainingsAsCoach(TrainingEntity trainingEntity){
         trainingsAsCoach.remove(trainingEntity);
@@ -55,10 +52,7 @@ public class EmployeeEntity extends AbstractEntity {
         return trainingEntity;
     }
 
-    public void addTrainingToTrainingsAsStudent(TrainingEntity trainingEntity){
-        trainingsAsStudent.add(trainingEntity);
-        trainingEntity.getEmployeesAsStudents().add(this);
-    }
+
     public TrainingEntity removeTrainingFromTrainingsAsStudent(TrainingEntity trainingEntity){
         trainingsAsStudent.remove(trainingEntity);
         trainingEntity.getEmployeesAsStudents().remove(this);
